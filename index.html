@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Teka-Teki Silang Medis Online</title>
+  <title>Teka-Teki Silang PPI Online</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -14,7 +14,7 @@
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1280px;
       margin: auto;
       background: #ffffff;
       padding: 24px;
@@ -36,19 +36,65 @@
 
     .content {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1.1fr 1fr;
       gap: 28px;
       align-items: start;
     }
 
+    .participant-box {
+      background: #eef8fa;
+      border: 1px solid #c7e6ec;
+      padding: 16px;
+      border-radius: 14px;
+      margin-bottom: 18px;
+    }
+
+    .participant-box h2 {
+      margin: 0 0 12px;
+      color: #0b6b78;
+      font-size: 18px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #9ca3af;
+      border-radius: 8px;
+      font-size: 15px;
+      box-sizing: border-box;
+    }
+
+    .score-card {
+      display: none;
+      margin-top: 14px;
+      padding: 14px;
+      background: #f9fafb;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      line-height: 1.6;
+    }
+
     .grid-wrap {
       overflow-x: auto;
-      padding-bottom: 8px;
+      padding: 12px 0;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(15, 31px);
+      grid-template-columns: repeat(20, 31px);
       gap: 3px;
       justify-content: center;
       min-width: max-content;
@@ -73,7 +119,7 @@
       width: 31px;
       height: 31px;
       text-align: center;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: bold;
       text-transform: uppercase;
       border: 1px solid #6b7280;
@@ -97,6 +143,8 @@
       background: #eef8fa;
       padding: 18px;
       border-radius: 14px;
+      max-height: 760px;
+      overflow-y: auto;
     }
 
     .clue-columns {
@@ -140,17 +188,6 @@
       margin-top: 18px;
     }
 
-    .host-only {
-      display: none;
-    }
-
-    .host-status {
-      text-align: center;
-      margin-top: 8px;
-      font-size: 14px;
-      color: #6b7280;
-    }
-
     button {
       background: #0b6b78;
       color: white;
@@ -174,6 +211,17 @@
       background: #4b5563;
     }
 
+    .host-only {
+      display: none;
+    }
+
+    .host-status {
+      text-align: center;
+      margin-top: 8px;
+      font-size: 14px;
+      color: #6b7280;
+    }
+
     .result {
       text-align: center;
       font-size: 18px;
@@ -189,17 +237,50 @@
       background: #fee2e2;
     }
 
-    @media (max-width: 950px) {
-      .content, .clue-columns {
+    .note {
+      font-size: 13px;
+      color: #6b7280;
+      text-align: center;
+      margin-top: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 980px) {
+      .content, .clue-columns, .form-row {
         grid-template-columns: 1fr;
+      }
+      .grid {
+        grid-template-columns: repeat(20, 28px);
+      }
+      .cell, .black, .cell input {
+        width: 28px;
+        height: 28px;
+      }
+      .cell input {
+        font-size: 14px;
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Teka-Teki Silang Medis Online</h1>
-    <p class="subtitle">Isi kotak berdasarkan pertanyaan mendatar dan menurun. Klik <strong>Cek Jawaban</strong> untuk melihat hasilnya.</p>
+    <h1>Teka-Teki Silang PPI dan Medis Online</h1>
+    <p class="subtitle">Isi kotak berdasarkan pertanyaan mendatar dan menurun. Kunci jawaban hanya dapat dibuka oleh host.</p>
+
+    <div class="participant-box">
+      <h2>Data Peserta</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="participantName">Nama Peserta</label>
+          <input type="text" id="participantName" placeholder="Masukkan nama peserta" />
+        </div>
+        <div class="form-group">
+          <label for="participantUnit">Unit / Ruangan</label>
+          <input type="text" id="participantUnit" placeholder="Contoh: Rawat Inap / ICU / Kelas" />
+        </div>
+      </div>
+      <div class="score-card" id="scoreCard"></div>
+    </div>
 
     <div class="content">
       <div>
@@ -209,114 +290,122 @@
 
         <div class="buttons">
           <button onclick="checkAnswers()">Cek Jawaban</button>
+          <button class="secondary" onclick="copyScore()">Salin Nilai</button>
           <button class="secondary" onclick="resetGrid()">Ulangi</button>
           <button class="secondary" onclick="hostLogin()" id="hostLoginBtn">Masuk sebagai Host</button>
           <button class="host-only" onclick="showAnswers()">Tampilkan Jawaban</button>
           <button class="host-only secondary" onclick="toggleKey()">Kunci Jawaban</button>
         </div>
+
         <div class="host-status" id="hostStatus">Mode peserta: kunci jawaban disembunyikan.</div>
         <div class="result" id="result"></div>
+        <p class="note">Untuk peserta, bagikan file ini tanpa memberi tahu password host. Password dapat diganti pada bagian kode JavaScript.</p>
       </div>
 
       <div class="clues">
         <div class="clue-columns">
           <div>
-            <h2>Pertanyaan Mendatar</h2>
+            <h2>Mendatar</h2>
             <ol>
-              <li value="1">Tenaga medis yang memeriksa dan mengobati pasien.</li>
-              <li value="2">Orang yang sedang menerima pelayanan kesehatan.</li>
-              <li value="3">Zat yang diberikan untuk membentuk kekebalan tubuh.</li>
-              <li value="4">Kondisi suhu tubuh meningkat di atas normal.</li>
-              <li value="5">Bahan atau sediaan yang digunakan untuk menyembuhkan penyakit.</li>
-              <li value="6">Pemeriksaan tekanan darah menggunakan alat tensimeter.</li>
-              <li value="7">Denyut pembuluh darah yang dapat diraba.</li>
-              <li value="8">Catatan obat yang ditulis oleh dokter untuk pasien.</li>
-              <li value="9">Cairan merah dalam tubuh yang mengangkut oksigen.</li>
-              <li value="10">Tempat pemeriksaan sampel darah, urine, atau jaringan tubuh.</li>
+              <li value="1">APD yang tidak menggantikan cuci tangan.</li>
+              <li value="3">Pemrosesan alat kesehatan kritikal.</li>
+              <li value="6">Penyakit droplet transmisi.</li>
+              <li value="8">Cara penyebaran kuman.</li>
+              <li value="9">Penyakit yang dapat dicegah dengan mencuci tangan.</li>
+              <li value="10">Penyakit dirawat di ruangan tekanan negatif.</li>
+              <li value="12">Sistem perawatan dengan diagnosa yang sama.</li>
+              <li value="15">Sistem tata udara di isolasi.</li>
+              <li value="16">Jenis masker yang digunakan untuk transmisi droplet.</li>
+              <li value="17">Istilah terbaru infeksi yang diperoleh setelah mendapatkan perawatan di fasilitas kesehatan.</li>
+              <li value="18">Warna plastik tempat sampah kemoterapi.</li>
+              <li value="20">Infeksi terkait pelayanan kesehatan.</li>
+              <li value="25">Salah satu upaya kegiatan mencegah dan meminimal insiden rate.</li>
             </ol>
           </div>
 
           <div>
-            <h2>Pertanyaan Menurun</h2>
+            <h2>Menurun</h2>
             <ol>
-              <li value="11">Tenaga kesehatan yang membantu merawat pasien.</li>
-              <li value="12">Pemeriksaan medis menggunakan sinar-X.</li>
-              <li value="13">Cairan yang diberikan melalui pembuluh darah.</li>
-              <li value="14">Obat atau tindakan untuk menghilangkan rasa sakit saat operasi.</li>
-              <li value="15">Gas yang dibutuhkan tubuh untuk proses pernapasan.</li>
-              <li value="16">Fasilitas pelayanan kesehatan untuk pemeriksaan dan pengobatan.</li>
-              <li value="17">Organ tubuh yang berfungsi memompa darah.</li>
-              <li value="18">Istilah umum untuk kadar glukosa dalam darah.</li>
-              <li value="19">Alat pelindung yang menutup hidung dan mulut.</li>
-              <li value="20">Keadaan bebas dari kuman atau mikroorganisme.</li>
+              <li value="2">Jenis pemeriksaan air RO.</li>
+              <li value="4">Pengawasan infeksi RS.</li>
+              <li value="5">Transmisi yang menggunakan APD N95.</li>
+              <li value="7">Tangan tampak kotor, waktu 40–60 detik.</li>
+              <li value="11">Warna tempat sampah B3.</li>
+              <li value="13">Menutupi hidung, mulut, dan dagu.</li>
+              <li value="14">Media transmisi penularan infeksi.</li>
+              <li value="19">Bakteri resisten di RS.</li>
+              <li value="21">Bagian tangan yang terakhir dibersihkan sesuai langkah HH.</li>
+              <li value="22">Penggunaan peralatan disposable yang digunakan kembali.</li>
+              <li value="23">Mengurangi risiko infeksi di sarmut urutan keberapa.</li>
+              <li value="24">Alat pelindung diri tenaga kesehatan.</li>
+              <li value="26">World Hand Hygiene Day.</li>
             </ol>
           </div>
         </div>
 
         <div class="answer-key" id="answerKey">
-          <h3>Kunci Jawaban</h3>
-          <p><strong>Mendatar:</strong> 1 DOKTER, 2 PASIEN, 3 VAKSIN, 4 DEMAM, 5 OBAT, 6 TENSI, 7 NADI, 8 RESEP, 9 DARAH, 10 LABOR.</p>
-          <p><strong>Menurun:</strong> 11 PERAWAT, 12 RONTGEN, 13 INFUS, 14 ANESTESI, 15 OKSIGEN, 16 KLINIK, 17 JANTUNG, 18 GULA, 19 MASKER, 20 STERIL.</p>
+          <h3>Kunci Jawaban Host</h3>
+          <p><strong>Mendatar:</strong> 1 SARUNGTANGAN, 3 STERILISASI, 6 PNEUMONIA, 8 TRANSMISI, 9 INFEKSI, 10 MEASLES, 12 KOHORT, 15 HEPA, 16 BEDAH, 17 HAIS, 18 UNGU, 20 HAIS, 25 PPI.</p>
+          <p><strong>Menurun:</strong> 2 ENDOTOKSIN, 4 SURVEILANS, 5 AIRBORNE, 7 HANDWASH, 11 COKELAT, 13 MASKER, 14 TANGAN, 19 MRSA, 21 KUKU, 22 REUSE, 23 LIMA, 24 APD, 26 MEI.</p>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    // Ubah password host sesuai kebutuhan sebelum dibagikan.
-    // Catatan: ini hanya pengaman sederhana untuk penggunaan kelas/internal.
+    // Ubah password host sesuai kebutuhan sebelum file dibagikan.
+    // Catatan: ini pengaman sederhana untuk penggunaan kelas/internal.
     const HOST_PASSWORD = 'host123';
     let isHost = false;
 
     const layout = [
-      ['#','#','#','#','#','#','K','#','#','#','#','#','#','#','#'],
-      ['#','#','#','#','#','#','L','#','#','#','#','#','#','#','#'],
-      ['#','#','#','#','#','#','I','#','#','#','#','#','#','#','#'],
-      ['#','#','#','#','#','#','N','#','#','#','#','#','#','#','#'],
-      ['#','#','#','N','A','D','I','#','#','#','#','#','#','#','#'],
-      ['#','#','#','#','N','#','K','#','#','#','#','#','#','#','#'],
-      ['D','O','K','T','E','R','#','#','#','#','#','#','#','#','#'],
-      ['#','#','#','#','S','#','#','#','#','#','#','G','#','#','#'],
-      ['#','#','#','#','T','#','#','#','#','#','#','U','#','#','#'],
-      ['#','#','#','#','E','#','#','#','#','#','#','L','#','#','#'],
-      ['#','#','#','#','S','#','I','#','D','E','M','A','M','#','#'],
-      ['#','P','A','S','I','E','N','#','#','#','A','#','#','#','#'],
-      ['#','#','#','#','#','#','F','#','R','E','S','E','P','#','#'],
-      ['#','#','#','#','J','#','U','#','O','#','K','#','#','#','#'],
-      ['#','#','#','V','A','K','S','I','N','#','E','#','#','#','#'],
-      ['#','#','#','#','N','#','#','#','T','#','R','#','#','#','#'],
-      ['#','O','B','A','T','#','#','#','G','#','#','#','#','#','#'],
-      ['#','K','#','#','U','#','#','T','E','N','S','I','#','#','#'],
-      ['#','S','#','#','N','#','#','#','N','#','T','#','#','#','#'],
-      ['#','I','#','#','G','#','#','#','#','#','E','#','#','#','#'],
-      ['#','G','#','#','#','#','#','#','D','A','R','A','H','#','P'],
-      ['#','E','#','#','#','#','#','#','#','#','I','#','#','#','E'],
-      ['#','N','#','#','#','#','#','#','#','#','L','A','B','O','R'],
-      ['#','#','#','#','#','#','#','#','#','#','#','#','#','#','A'],
-      ['#','#','#','#','#','#','#','#','#','#','#','#','#','#','W'],
-      ['#','#','#','#','#','#','#','#','#','#','#','#','#','#','A'],
-      ['#','#','#','#','#','#','#','#','#','#','#','#','#','#','T']
+      '######M########L####',
+      '######R######PPI####',
+      '######S##E##M##M####',
+      '#####SARUNGTANGAN###',
+      '##T#C####D##S#######',
+      '##A#O####O##K#######',
+      '##G#KOHORT#BEDAH####',
+      '##G#E####O##R#P#####',
+      'MEASLES##K####D#H#R#',
+      '##N#A#U##S##A##A#E#',
+      '###STERILISASI#UNGU#',
+      '######V##N###R##D#S#',
+      '###M##E####K#B##W#E#',
+      'INFEKSI#PNEUMONIA###',
+      '###I##L####K#R##S###',
+      '#####HAIS##U#N##HAIS',
+      '######N#####HEPA####',
+      '##TRANSMISI#########'
     ];
 
     const numbers = {
-      '6-0': '1',
-      '11-1': '2',
-      '14-3': '3',
-      '10-8': '4',
-      '16-1': '5/15',
-      '17-7': '6',
-      '4-3': '7',
-      '12-8': '8/12',
-      '20-8': '9',
-      '22-10': '10',
-      '20-14': '11',
-      '10-6': '13',
-      '4-4': '14',
-      '0-6': '16',
-      '13-4': '17',
-      '7-11': '18',
-      '10-10': '19',
-      '17-10': '20'
+      '3-5': '1',
+      '2-9': '2',
+      '10-3': '3',
+      '8-6': '4',
+      '9-13': '5',
+      '13-8': '6',
+      '8-16': '7',
+      '17-2': '8',
+      '13-0': '9',
+      '8-0': '10',
+      '4-4': '11',
+      '6-4': '12',
+      '2-12': '13',
+      '4-2': '14',
+      '16-12': '15',
+      '6-11': '16',
+      '15-5': '17',
+      '10-15': '18',
+      '0-6': '19',
+      '15-16': '20',
+      '12-11': '21',
+      '8-18': '22',
+      '0-15': '23',
+      '6-14': '24',
+      '1-13': '25',
+      '12-3': '26'
     };
 
     const grid = document.getElementById('crossword');
@@ -324,7 +413,7 @@
     function createGrid() {
       grid.innerHTML = '';
       layout.forEach((row, r) => {
-        row.forEach((letter, c) => {
+        row.split('').forEach((letter, c) => {
           const div = document.createElement('div');
           div.className = letter === '#' ? 'black' : 'cell';
 
@@ -340,6 +429,7 @@
             const input = document.createElement('input');
             input.maxLength = 1;
             input.dataset.answer = letter;
+            input.setAttribute('aria-label', `Kotak ${r + 1}-${c + 1}`);
             input.addEventListener('input', () => {
               input.value = input.value.toUpperCase();
               moveNext(input);
@@ -361,6 +451,15 @@
     }
 
     function checkAnswers() {
+      const name = document.getElementById('participantName').value.trim();
+      const unit = document.getElementById('participantUnit').value.trim();
+
+      if (!name) {
+        alert('Mohon isi nama peserta terlebih dahulu.');
+        document.getElementById('participantName').focus();
+        return;
+      }
+
       let total = 0;
       let correct = 0;
       document.querySelectorAll('.cell').forEach(cell => {
@@ -376,9 +475,25 @@
         }
       });
 
+      const percentage = Math.round((correct / total) * 100);
       const result = document.getElementById('result');
-      result.textContent = `Jawaban benar: ${correct} dari ${total} kotak.`;
+      result.textContent = `Nilai ${name}: ${correct} dari ${total} kotak benar (${percentage}%).`;
       result.style.color = correct === total ? '#047857' : '#b45309';
+
+      const now = new Date().toLocaleString('id-ID');
+      const scoreText = `Nama Peserta: ${name}\nUnit/Ruangan: ${unit || '-'}\nWaktu: ${now}\nSkor Benar: ${correct}\nTotal Kotak: ${total}\nPersentase: ${percentage}%`;
+
+      const scoreCard = document.getElementById('scoreCard');
+      scoreCard.style.display = 'block';
+      scoreCard.dataset.score = scoreText;
+      scoreCard.innerHTML = `
+        <strong>Hasil Nilai Peserta</strong><br>
+        Nama Peserta: ${name}<br>
+        Unit/Ruangan: ${unit || '-'}<br>
+        Waktu: ${now}<br>
+        Skor Benar: ${correct} dari ${total}<br>
+        Persentase: ${percentage}%
+      `;
     }
 
     function resetGrid() {
@@ -388,27 +503,26 @@
         cell.classList.remove('correct', 'wrong');
       });
       document.getElementById('result').textContent = '';
+      const scoreCard = document.getElementById('scoreCard');
+      scoreCard.style.display = 'none';
+      scoreCard.dataset.score = '';
+      scoreCard.innerHTML = '';
     }
 
-    function showAnswers() {
-      document.querySelectorAll('.cell').forEach(cell => {
-        const input = cell.querySelector('input');
-        input.value = input.dataset.answer;
-        cell.classList.remove('wrong');
-        cell.classList.add('correct');
-      });
-      const result = document.getElementById('result');
-      result.textContent = 'Semua jawaban telah ditampilkan.';
-      result.style.color = '#047857';
-    }
+    function copyScore() {
+      const scoreCard = document.getElementById('scoreCard');
+      const scoreText = scoreCard.dataset.score;
 
-    function toggleKey() {
-      if (!isHost) {
-        alert('Kunci jawaban hanya dapat dilihat oleh host.');
+      if (!scoreText) {
+        alert('Klik Cek Jawaban terlebih dahulu sebelum menyalin nilai.');
         return;
       }
-      const key = document.getElementById('answerKey');
-      key.style.display = key.style.display === 'block' ? 'none' : 'block';
+
+      navigator.clipboard.writeText(scoreText).then(() => {
+        alert('Nilai peserta berhasil disalin. Silakan kirim ke host.');
+      }).catch(() => {
+        alert('Gagal menyalin otomatis. Silakan screenshot hasil nilai.');
+      });
     }
 
     function showAnswers() {
@@ -425,6 +539,15 @@
       const result = document.getElementById('result');
       result.textContent = 'Semua jawaban telah ditampilkan untuk host.';
       result.style.color = '#047857';
+    }
+
+    function toggleKey() {
+      if (!isHost) {
+        alert('Kunci jawaban hanya dapat dilihat oleh host.');
+        return;
+      }
+      const key = document.getElementById('answerKey');
+      key.style.display = key.style.display === 'block' ? 'none' : 'block';
     }
 
     function hostLogin() {
@@ -446,3 +569,4 @@
   </script>
 </body>
 </html>
+
