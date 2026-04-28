@@ -395,7 +395,7 @@
       <div class="box-panel">
         <h2>Leaderboard (Top 10)</h2>
         <ul class="leaderboard-list" id="leaderboardList">
-          <li class="leaderboard-item">Belum ada data.</li>
+          <li class="leaderboard-item">Memuat data...</li>
         </ul>
         <button class="secondary host-only" onclick="clearLeaderboard()" style="margin-top: 15px; width: 100%; padding: 8px; font-size: 12px;">Reset Papan Skor (Host)</button>
       </div>
@@ -469,10 +469,30 @@
     </div>
   </div>
 
-  <script>
+  <script type="module">
+    // Import fungsi Firebase dari CDN
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getDatabase, ref, set, get, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+    // Konfigurasi Firebase Anda
+    const firebaseConfig = {
+      apiKey: "AIzaSyBkmmsivbqmQVT3jiv3X5RmNb1Jjh9BPMY",
+      authDomain: "tekatekisialng.firebaseapp.com",
+      databaseURL: "https://tekatekisialng-default-rtdb.firebaseio.com",
+      projectId: "tekatekisialng",
+      storageBucket: "tekatekisialng.firebasestorage.app",
+      messagingSenderId: "1017835792664",
+      appId: "1:1017835792664:web:5acdbf600344ff8612d66d",
+      measurementId: "G-16XLLJNPZH"
+    };
+
+    // Initialize Firebase & Database
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
     // Ubah password host sesuai kebutuhan sebelum file dibagikan.
     const HOST_PASSWORD = 'host123';
-    let isHost = false;
+    window.isHost = false; // Memasukkan ke objek window agar bisa diakses HTML
 
     const layout = [
       '######M########L####',
@@ -506,7 +526,7 @@
     const grid = document.getElementById('crossword');
 
     // Fungsi Render Grid
-    function createGrid() {
+    window.createGrid = function() {
       grid.innerHTML = '';
       layout.forEach((row, r) => {
         row.split('').forEach((letter, c) => {
@@ -528,7 +548,7 @@
             input.setAttribute('aria-label', `Kotak ${r + 1}-${c + 1}`);
             input.addEventListener('input', () => {
               input.value = input.value.toUpperCase();
-              moveNext(input);
+              window.moveNext(input);
             });
             div.appendChild(input);
           }
@@ -538,7 +558,7 @@
     }
 
     // Fungsi Pindah Kotak Otomatis
-    function moveNext(currentInput) {
+    window.moveNext = function(currentInput) {
       if (!currentInput.value) return;
       const inputs = Array.from(document.querySelectorAll('.cell input'));
       const index = inputs.indexOf(currentInput);
@@ -547,32 +567,39 @@
       }
     }
 
-    // FITUR LEADERBOARD: Simpan Data ke LocalStorage
-    function saveToLeaderboard(name, unit, correct, percentage) {
-      let leaderboard = JSON.parse(localStorage.getItem('ppiLeaderboard')) || [];
-      
-      // Update skor jika nama yang sama mencoba lagi, atau push baru
-      let existingIndex = leaderboard.findIndex(p => p.name.toLowerCase() === name.toLowerCase() && p.unit === unit);
-      
-      if (existingIndex !== -1) {
-        if (correct > leaderboard[existingIndex].correct) {
-          leaderboard[existingIndex].correct = correct;
-          leaderboard[existingIndex].percentage = percentage;
+    // FITUR LEADERBOARD: Simpan Data ke Firebase Realtime Database
+    window.saveToLeaderboard = function(name, unit, correct, percentage) {
+      // Membuat unique ID dari nama dan unit (hilangkan spasi dan karakter khusus)
+      const userId = (name + "_" + unit).replace(/[^a-zA-Z0-9]/g, "_").toLowerCase();
+      const userRef = ref(db, 'leaderboard/' + userId);
+
+      get(userRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          // Update skor hanya jika percobaan kali ini nilainya lebih tinggi
+          if (correct > data.correct) {
+            set(userRef, { name, unit, correct, percentage });
+          }
+        } else {
+          // Push data baru jika belum ada
+          set(userRef, { name, unit, correct, percentage });
         }
-      } else {
-        leaderboard.push({ name, unit, correct, percentage });
-      }
+      }).catch((error) => {
+        console.error("Error saving to database: ", error);
+      });
+    }
+
+    // FITUR LEADERBOARD: Tampilkan Data secara Realtime
+    const leaderboardRef = ref(db, 'leaderboard');
+    onValue(leaderboardRef, (snapshot) => {
+      let leaderboard = [];
+      snapshot.forEach((childSnapshot) => {
+        leaderboard.push(childSnapshot.val());
+      });
 
       // Urutkan berdasarkan skor tertinggi
       leaderboard.sort((a, b) => b.correct - a.correct);
-      localStorage.setItem('ppiLeaderboard', JSON.stringify(leaderboard));
-      
-      renderLeaderboard();
-    }
 
-    // FITUR LEADERBOARD: Tampilkan Data
-    function renderLeaderboard() {
-      let leaderboard = JSON.parse(localStorage.getItem('ppiLeaderboard')) || [];
       const list = document.getElementById('leaderboardList');
       list.innerHTML = '';
 
@@ -591,18 +618,21 @@
         `;
         list.appendChild(li);
       });
-    }
+    });
 
     // FITUR LEADERBOARD: Hapus Data (Hanya Host)
-    function clearLeaderboard() {
-      if(confirm("Apakah Anda yakin ingin menghapus semua data leaderboard?")) {
-        localStorage.removeItem('ppiLeaderboard');
-        renderLeaderboard();
+    window.clearLeaderboard = function() {
+      if(confirm("Apakah Anda yakin ingin menghapus semua data leaderboard dari database?")) {
+        remove(ref(db, 'leaderboard')).then(() => {
+           alert("Data leaderboard berhasil dikosongkan.");
+        }).catch((error) => {
+           console.error("Gagal menghapus data: ", error);
+        });
       }
     }
 
     // Fungsi Cek Jawaban
-    function checkAnswers() {
+    window.checkAnswers = function() {
       const name = document.getElementById('participantName').value.trim();
       const unit = document.getElementById('participantUnit').value.trim();
 
@@ -647,12 +677,12 @@
         Persentase: ${percentage}%
       `;
 
-      // Simpan skor ke Leaderboard
-      saveToLeaderboard(name, unit, correct, percentage);
+      // Simpan skor ke Firebase Leaderboard
+      window.saveToLeaderboard(name, unit, correct, percentage);
     }
 
     // Fungsi Ulangi
-    function resetGrid() {
+    window.resetGrid = function() {
       document.querySelectorAll('.cell').forEach(cell => {
         const input = cell.querySelector('input');
         input.value = '';
@@ -666,7 +696,7 @@
     }
 
     // Fungsi Salin Nilai
-    function copyScore() {
+    window.copyScore = function() {
       const scoreCard = document.getElementById('scoreCard');
       const scoreText = scoreCard.dataset.score;
 
@@ -683,8 +713,8 @@
     }
 
     // Fungsi Tampilkan Semua Jawaban (Host)
-    function showAnswers() {
-      if (!isHost) {
+    window.showAnswers = function() {
+      if (!window.isHost) {
         alert('Jawaban hanya dapat ditampilkan oleh host.');
         return;
       }
@@ -700,8 +730,8 @@
     }
 
     // Fungsi Toggle Kunci Jawaban Text (Host)
-    function toggleKey() {
-      if (!isHost) {
+    window.toggleKey = function() {
+      if (!window.isHost) {
         alert('Kunci jawaban hanya dapat dilihat oleh host.');
         return;
       }
@@ -710,15 +740,20 @@
     }
 
     // Fungsi Login Host
-    function hostLogin() {
+    window.hostLogin = function() {
       const pass = prompt('Masukkan password host:');
       if (pass === HOST_PASSWORD) {
-        isHost = true;
+        window.isHost = true;
         document.querySelectorAll('.host-only').forEach(btn => {
           btn.style.display = 'inline-block';
         });
-        document.getElementById('hostStatus').textContent = 'Mode host aktif: akses penuh terbuka.';
-        document.getElementById('hostStatus').style.color = '#f37021';
+        
+        // Pengecekan elemen agar script tidak error
+        const hostStatus = document.getElementById('hostStatus');
+        if (hostStatus) {
+            hostStatus.textContent = 'Mode host aktif: akses penuh terbuka.';
+            hostStatus.style.color = '#f37021';
+        }
         document.getElementById('hostLoginBtn').style.display = 'none';
       } else if (pass !== null) {
         alert('Password salah.');
@@ -726,8 +761,7 @@
     }
 
     // Inisialisasi awal
-    createGrid();
-    renderLeaderboard();
+    window.createGrid();
   </script>
 </body>
 </html>
