@@ -45,7 +45,7 @@
       font-size: 15px;
     }
 
-    /* Layout Top Section (Peserta & Leaderboard) */
+    /* Layout Top Section */
     .top-section {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -164,22 +164,24 @@
       margin-bottom: 15px;
     }
 
+    /* TEMA GAMBAR 2: Kotak Berdekatan, Rounded, Biru Navy */
     .grid {
       display: grid;
-      grid-template-columns: repeat(20, 31px);
-      gap: 3px;
+      grid-template-columns: repeat(20, 32px);
+      gap: 4px; /* Memberikan jarak berdekatan antar kotak seperti Gambar 2 */
       justify-content: center;
       min-width: max-content;
+      margin: 0 auto;
     }
 
     .cell, .black {
-      width: 31px;
-      height: 31px;
-      border-radius: 4px;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px; /* Sudut membulat seperti Gambar 2 */
     }
 
     .black {
-      background: var(--emc-navy);
+      background: var(--emc-navy); /* Warna biru gelap untuk kotak kosong */
     }
 
     .cell {
@@ -188,16 +190,19 @@
     }
 
     .cell input {
-      width: 31px;
-      height: 31px;
+      width: 100%;
+      height: 100%;
       text-align: center;
       font-size: 15px;
       font-weight: bold;
       text-transform: uppercase;
       border: 1px solid #a0aab5;
-      border-radius: 4px;
+      border-radius: 6px; /* Membulat */
       background: transparent;
       box-sizing: border-box;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
     }
 
     .cell input:focus {
@@ -206,15 +211,20 @@
       outline: none;
     }
 
+    .cell.active-word input {
+      background-color: #fff3ed;
+    }
+
     .num {
       position: absolute;
-      top: 1px;
-      left: 2px;
-      font-size: 9px;
+      top: 2px;
+      left: 4px;
+      font-size: 10px;
       color: var(--emc-navy);
       z-index: 2;
       line-height: 1;
       font-weight: bold;
+      pointer-events: none;
     }
 
     .clues {
@@ -304,14 +314,6 @@
       display: none;
     }
 
-    .host-status {
-      text-align: center;
-      margin-top: 12px;
-      font-size: 14px;
-      color: #666;
-      font-weight: bold;
-    }
-
     .result {
       text-align: center;
       font-size: 18px;
@@ -320,40 +322,25 @@
     }
 
     .correct input {
-      background: #d1fae5 !important;
+      background-color: #d1fae5 !important;
       border-color: #10b981 !important;
       color: #065f46;
     }
 
     .wrong input {
-      background: #fee2e2 !important;
+      background-color: #fee2e2 !important;
       border-color: #ef4444 !important;
       color: #991b1b;
     }
 
-    .note {
-      font-size: 13px;
-      color: #666;
-      text-align: center;
-      margin-top: 16px;
-      line-height: 1.5;
-      padding: 10px;
-      background: #f8f9fa;
-      border-radius: 6px;
-    }
-
-    /* Responsiveness */
     @media (max-width: 980px) {
       .top-section, .content, .clue-columns {
-        grid-template-columns: 1fr;
-      }
-      .form-row {
         grid-template-columns: 1fr;
       }
       .grid {
         grid-template-columns: repeat(20, 28px);
       }
-      .cell, .black, .cell input {
+      .cell, .black {
         width: 28px;
         height: 28px;
       }
@@ -373,7 +360,7 @@
 <body>
   <div class="container">
     <h1>Clean Hands Save Lives – TTS PPI Edition</h1>
-    <p class="subtitle">Isi kotak berdasarkan pertanyaan mendatar dan menurun. Kunci jawaban hanya dapat dibuka oleh host.</p>
+    <p class="subtitle">Isi kotak mengikuti alur (mendatar/menurun). Penilaian dihitung per pertanyaan.</p>
 
     <div class="top-section">
       <div class="box-panel">
@@ -410,7 +397,7 @@
           <button onclick="checkAnswers()">Cek Jawaban</button>
           <button class="secondary" onclick="copyScore()">Salin Nilai</button>
           <button class="secondary" onclick="resetGrid()">Ulangi</button>
-          <button class="secondary" onclick="hostLogin()" id="hostLoginBtn">Masuk sebagai Host</button>
+          <button class="secondary" onclick="hostLogin()" id="hostLoginBtn">Masuk Host</button>
           <button class="host-only" onclick="showAnswers()">Tampilkan Jawaban</button>
           <button class="host-only secondary" onclick="toggleKey()">Kunci Jawaban</button>
         </div>
@@ -423,53 +410,52 @@
           <div>
             <h2>Mendatar</h2>
             <ol>
-              <li value="1">APD yang tidak menggantikan cuci tangan.</li>
-              <li value="3">Pemrosesan alat kesehatan kritikal.</li>
-              <li value="6">Penyakit droplet transmisi.</li>
-              <li value="8">Cara penyebaran kuman.</li>
-              <li value="9">Penyakit yang dapat dicegah dengan mencuci tangan.</li>
-              <li value="10">Penyakit dirawat di ruangan tekanan negatif.</li>
-              <li value="12">Sistem perawatan dengan diagnosa yang sama.</li>
-              <li value="15">Sistem tata udara di isolasi.</li>
-              <li value="16">Jenis masker yang digunakan untuk transmisi droplet.</li>
-              <li value="17">Istilah terbaru infeksi yang diperoleh setelah mendapatkan perawatan di fasilitas kesehatan.</li>
+              <li value="3">Salah satu upaya kegiatan mencegah dan meminimal insiden rate.</li>
+              <li value="6">APD yang tidak menggantikan cuci tangan.</li>
+              <li value="9">Sistem perawatan dengan diagnosa yang sama.</li>
+              <li value="10">Jenis masker yang digunakan untuk transmisi droplet.</li>
+              <li value="12">Penyakit dirawat di ruangan tekanan negatif.</li>
+              <li value="17">Pemrosesan alat kesehatan kritikal.</li>
               <li value="18">Warna plastik tempat sampah kemoterapi.</li>
-              <li value="20">Infeksi terkait pelayanan kesehatan.</li>
-              <li value="25">Salah satu upaya kegiatan mencegah dan meminimal insiden rate.</li>
+              <li value="21">Penyakit yang dapat dicegah dengan mencuci tangan.</li>
+              <li value="22">Penyakit droplet transmisi.</li>
+              <li value="23">Istilah terbaru infeksi yang diperoleh setelah mendapatkan perawatan di fasilitas kesehatan.</li>
+              <li value="24">Infeksi terkait pelayanan kesehatan.</li>
+              <li value="25">Sistem tata udara di isolasi.</li>
+              <li value="26">Cara penyebaran kuman.</li>
             </ol>
           </div>
 
           <div>
             <h2>Menurun</h2>
             <ol>
-              <li value="2">Jenis pemeriksaan air RO.</li>
-              <li value="4">Pengawasan infeksi RS.</li>
-              <li value="5">Transmisi yang menggunakan APD N95.</li>
-              <li value="7">Tangan tampak kotor, waktu 40–60 detik.</li>
-              <li value="11">Warna tempat sampah B3.</li>
-              <li value="13">Menutupi hidung, mulut, dan dagu.</li>
-              <li value="14">Media transmisi penularan infeksi.</li>
-              <li value="19">Bakteri resisten di RS.</li>
-              <li value="21">Bagian tangan yang terakhir dibersihkan sesuai langkah HH.</li>
-              <li value="22">Penggunaan peralatan disposable yang digunakan kembali.</li>
-              <li value="23">Mengurangi risiko infeksi di sarmut urutan keberapa.</li>
-              <li value="24">Alat pelindung diri tenaga kesehatan.</li>
-              <li value="26">World Hand Hygiene Day.</li>
+              <li value="1">Bakteri resisten di RS.</li>
+              <li value="2">Mengurangi risiko infeksi di sarmut urutan keberapa.</li>
+              <li value="4">Jenis pemeriksaan air RO.</li>
+              <li value="5">Menutupi hidung, mulut, dan dagu.</li>
+              <li value="7">Media transmisi penularan infeksi.</li>
+              <li value="8">Warna tempat sampah B3.</li>
+              <li value="11">Alat pelindung diri tenaga kesehatan.</li>
+              <li value="13">Pengawasan infeksi RS.</li>
+              <li value="14">Tangan tampak kotor, waktu 40–60 detik.</li>
+              <li value="15">Penggunaan peralatan disposable yang digunakan kembali.</li>
+              <li value="16">Transmisi yang menggunakan APD N95.</li>
+              <li value="19">World Hand Hygiene Day.</li>
+              <li value="20">Bagian tangan yang terakhir dibersihkan sesuai langkah HH.</li>
             </ol>
           </div>
         </div>
 
         <div class="answer-key" id="answerKey">
           <h3>Kunci Jawaban Host</h3>
-          <p><strong>Mendatar:</strong> 1 SARUNGTANGAN, 3 STERILISASI, 6 PNEUMONIA, 8 TRANSMISI, 9 INFEKSI, 10 MEASLES, 12 KOHORT, 15 HEPA, 16 BEDAH, 17 HAIS, 18 UNGU, 20 HAIS, 25 PPI.</p>
-          <p><strong>Menurun:</strong> 2 ENDOTOKSIN, 4 SURVEILANS, 5 AIRBORNE, 7 HANDWASH, 11 COKELAT, 13 MASKER, 14 TANGAN, 19 MRSA, 21 KUKU, 22 REUSE, 23 LIMA, 24 APD, 26 MEI.</p>
+          <p><strong>Mendatar:</strong> 3 PPI, 6 SARUNGTANGAN, 9 KOHORT, 10 BEDAH, 12 MEASLES, 17 STERILISASI, 18 UNGU, 21 INFEKSI, 22 PNEUMONIA, 23 HAIS, 24 HAIS, 25 HEPA, 26 TRANSMISI.</p>
+          <p><strong>Menurun:</strong> 1 MRSA, 2 LIMA, 4 ENDOTOKSIN, 5 MASKER, 7 TANGAN, 8 COKELAT, 11 APD, 13 SURVEILANS, 14 HANDWASH, 15 REUSE, 16 AIRBORNE, 19 MEI, 20 KUKU.</p>
         </div>
       </div>
     </div>
   </div>
 
   <script type="module">
-    // Menambahkan 'push' pada daftar import fungsi Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, set, get, onValue, remove, push } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
@@ -490,94 +476,259 @@
     const HOST_PASSWORD = 'ibnu123!';
     window.isHost = false; 
 
-    const layout = [
-      '######M########L####',
-      '######R######PPI####',
-      '######S##E##M##M####',
-      '#####SARUNGTANGAN###',
-      '##T#C####D##S#######',
-      '##A#O####O##K#######',
-      '##G#KOHORT#BEDAH####',
-      '##G#E####O##R#P#####',
-      'MEASLES##K####D#H#R#',
-      '##N#A#U##S##A##A#E#',
-      '###STERILISASI#UNGU#',
-      '######V##N###R##D#S#',
-      '###M##E####K#B##W#E#',
-      'INFEKSI#PNEUMONIA###',
-      '###I##L####K#R##S###',
-      '#####HAIS##U#N##HAIS',
-      '######N#####HEPA####',
-      '##TRANSMISI#########'
+    /* === KOORDINAT SESUAI FOTO 1 (BERDEKATAN & MENGALIR) === */
+    const wordsConfig = [
+      { id: 1,  num: 1,  dir: 'down',   row: 0,  col: 6,  answer: 'MRSA' },
+      { id: 2,  num: 2,  dir: 'down',   row: 0,  col: 15, answer: 'LIMA' },
+      { id: 3,  num: 3,  dir: 'across', row: 1,  col: 13, answer: 'PPI' },
+      { id: 4,  num: 4,  dir: 'down',   row: 2,  col: 9,  answer: 'ENDOTOKSIN' },
+      { id: 5,  num: 5,  dir: 'down',   row: 2,  col: 12, answer: 'MASKER' },
+      { id: 6,  num: 6,  dir: 'across', row: 3,  col: 5,  answer: 'SARUNGTANGAN' },
+      { id: 7,  num: 7,  dir: 'down',   row: 4,  col: 2,  answer: 'TANGAN' },
+      { id: 8,  num: 8,  dir: 'down',   row: 4,  col: 4,  answer: 'COKELAT' },
+      { id: 9,  num: 9,  dir: 'across', row: 6,  col: 4,  answer: 'KOHORT' },
+      { id: 10, num: 10, dir: 'across', row: 6,  col: 11, answer: 'BEDAH' },
+      { id: 11, num: 11, dir: 'down',   row: 6,  col: 14, answer: 'APD' },
+      { id: 12, num: 12, dir: 'across', row: 8,  col: 0,  answer: 'MEASLES' },
+      { id: 13, num: 13, dir: 'down',   row: 8,  col: 6,  answer: 'SURVEILANS' },
+      { id: 14, num: 14, dir: 'down',   row: 8,  col: 16, answer: 'HANDWASH' },
+      { id: 15, num: 15, dir: 'down',   row: 8,  col: 18, answer: 'REUSE' },
+      { id: 16, num: 16, dir: 'down',   row: 9,  col: 13, answer: 'AIRBORNE' },
+      { id: 17, num: 17, dir: 'across', row: 10, col: 3,  answer: 'STERILISASI' },
+      { id: 18, num: 18, dir: 'across', row: 10, col: 15, answer: 'UNGU' },
+      { id: 19, num: 19, dir: 'down',   row: 12, col: 3,  answer: 'MEI' },
+      { id: 20, num: 20, dir: 'down',   row: 12, col: 11, answer: 'KUKU' },
+      { id: 21, num: 21, dir: 'across', row: 13, col: 0,  answer: 'INFEKSI' },
+      { id: 22, num: 22, dir: 'across', row: 13, col: 8,  answer: 'PNEUMONIA' },
+      { id: 23, num: 23, dir: 'across', row: 15, col: 5,  answer: 'HAIS' },
+      { id: 24, num: 24, dir: 'across', row: 15, col: 16, answer: 'HAIS' },
+      { id: 25, num: 25, dir: 'across', row: 16, col: 12, answer: 'HEPA' },
+      { id: 26, num: 26, dir: 'across', row: 17, col: 2,  answer: 'TRANSMISI' }
     ];
 
-    const numbers = {
-      '3-5': '1', '2-9': '2', '10-3': '3', '8-6': '4', '9-13': '5', '13-8': '6',
-      '8-16': '7', '17-2': '8', '13-0': '9', '8-0': '10', '4-4': '11', '6-4': '12',
-      '2-12': '13', '4-2': '14', '16-12': '15', '6-11': '16', '15-5': '17', '10-15': '18',
-      '0-6': '19', '15-16': '20', '12-11': '21', '8-18': '22', '0-15': '23', '6-14': '24',
-      '1-13': '25', '12-3': '26'
-    };
+    const ROWS = 18;
+    const COLS = 20;
+    let gridData = [];
+    let currentDirection = 'across'; 
+    let activeWordId = null;
 
-    const grid = document.getElementById('crossword');
-
+    /* === GENERATE GRID OTOMATIS === */
     window.createGrid = function() {
-      grid.innerHTML = '';
-      layout.forEach((row, r) => {
-        row.split('').forEach((letter, c) => {
+      for (let r = 0; r < ROWS; r++) {
+        let row = [];
+        for (let c = 0; c < COLS; c++) row.push({ empty: true });
+        gridData.push(row);
+      }
+
+      wordsConfig.forEach(w => {
+        let r = w.row;
+        let c = w.col;
+        
+        if (gridData[r][c].empty) {
+          gridData[r][c] = { empty: false, num: w.num, words: {} };
+        } else {
+          gridData[r][c].num = w.num;
+        }
+
+        for (let i = 0; i < w.answer.length; i++) {
+          let currR = w.dir === 'across' ? r : r + i;
+          let currC = w.dir === 'across' ? c + i : c;
+
+          if (gridData[currR][currC].empty) {
+            gridData[currR][currC] = { empty: false, words: {} };
+          }
+          gridData[currR][currC].words[w.dir] = w.id;
+        }
+      });
+
+      const container = document.getElementById('crossword');
+      container.innerHTML = '';
+      
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const cell = gridData[r][c];
           const div = document.createElement('div');
-          div.className = letter === '#' ? 'black' : 'cell';
-
-          if (letter !== '#') {
-            const key = `${r}-${c}`;
-            if (numbers[key]) {
-              const num = document.createElement('span');
-              num.className = 'num';
-              num.textContent = numbers[key];
-              div.appendChild(num);
+          
+          if (cell.empty) {
+            div.className = 'black';
+          } else {
+            div.className = 'cell';
+            div.dataset.r = r;
+            div.dataset.c = c;
+            
+            if (cell.num) {
+              const span = document.createElement('span');
+              span.className = 'num';
+              span.textContent = cell.num;
+              div.appendChild(span);
             }
-
+            
             const input = document.createElement('input');
             input.maxLength = 1;
-            input.dataset.answer = letter;
-            input.setAttribute('aria-label', `Kotak ${r + 1}-${c + 1}`);
-            input.addEventListener('input', () => {
-              input.value = input.value.toUpperCase();
-              window.moveNext(input);
-            });
+            input.dataset.r = r;
+            input.dataset.c = c;
+            input.dataset.across = cell.words['across'] || '';
+            input.dataset.down = cell.words['down'] || '';
+            
+            input.addEventListener('focus', () => handleFocus(input));
+            input.addEventListener('input', (e) => handleInput(e, input));
+            input.addEventListener('keydown', (e) => handleKeyDown(e, input));
+            
             div.appendChild(input);
           }
-          grid.appendChild(div);
-        });
-      });
+          container.appendChild(div);
+        }
+      }
+    };
+
+    /* === LOGIKA NAVIGASI KURSOR === */
+    function handleFocus(input) {
+      const acrossId = input.dataset.across;
+      const downId = input.dataset.down;
+
+      if (acrossId && downId) {
+        if (activeWordId == acrossId) currentDirection = 'down';
+        else if (activeWordId == downId) currentDirection = 'across';
+        else currentDirection = currentDirection === 'across' ? 'across' : 'down';
+      } else {
+        currentDirection = acrossId ? 'across' : 'down';
+      }
+
+      activeWordId = currentDirection === 'across' ? acrossId : downId;
+      highlightActiveWord();
     }
 
-    window.moveNext = function(currentInput) {
-      if (!currentInput.value) return;
-      const inputs = Array.from(document.querySelectorAll('.cell input'));
-      const index = inputs.indexOf(currentInput);
-      if (index >= 0 && index < inputs.length - 1) {
-        inputs[index + 1].focus();
+    function handleInput(e, input) {
+      input.value = input.value.toUpperCase();
+      if (input.value) moveNext(input, 1);
+    }
+
+    function handleKeyDown(e, input) {
+      if (e.key === 'Backspace' && !input.value) {
+        moveNext(input, -1);
+      } else if (e.key === 'Tab') {
+        e.preventDefault();
+        const acrossId = input.dataset.across;
+        const downId = input.dataset.down;
+        if (acrossId && downId) {
+           currentDirection = currentDirection === 'across' ? 'down' : 'across';
+           activeWordId = currentDirection === 'across' ? acrossId : downId;
+           highlightActiveWord();
+        }
+      } else if (e.key === 'ArrowRight') moveFocus(input, 0, 1);
+      else if (e.key === 'ArrowLeft') moveFocus(input, 0, -1);
+      else if (e.key === 'ArrowDown') moveFocus(input, 1, 0);
+      else if (e.key === 'ArrowUp') moveFocus(input, -1, 0);
+    }
+
+    function moveNext(input, step) {
+      let r = parseInt(input.dataset.r);
+      let c = parseInt(input.dataset.c);
+      
+      if (currentDirection === 'across') c += step;
+      else r += step;
+
+      const nextInput = document.querySelector(`input[data-r="${r}"][data-c="${c}"]`);
+      if (nextInput && nextInput.dataset[currentDirection] == activeWordId) {
+        nextInput.focus();
       }
     }
 
-    // UPDATE: Fungsi menyimpan data ke riwayat DAN leaderboard
+    function moveFocus(input, rOffset, cOffset) {
+      let r = parseInt(input.dataset.r) + rOffset;
+      let c = parseInt(input.dataset.c) + cOffset;
+      const nextInput = document.querySelector(`input[data-r="${r}"][data-c="${c}"]`);
+      if (nextInput) nextInput.focus();
+    }
+
+    function highlightActiveWord() {
+      document.querySelectorAll('.cell').forEach(c => c.classList.remove('active-word'));
+      if (!activeWordId) return;
+      document.querySelectorAll(`input[data-${currentDirection}="${activeWordId}"]`).forEach(inp => {
+        inp.parentElement.classList.add('active-word');
+      });
+    }
+
+    /* === SISTEM PENILAIAN PER KATA === */
+    window.checkAnswers = function() {
+      const name = document.getElementById('participantName').value.trim();
+      const unit = document.getElementById('participantUnit').value.trim();
+
+      if (!name) {
+        alert('Mohon isi nama peserta terlebih dahulu.');
+        document.getElementById('participantName').focus();
+        return;
+      }
+
+      let correctWordsCount = 0;
+      const totalWords = wordsConfig.length;
+
+      document.querySelectorAll('.cell').forEach(cell => {
+        cell.classList.remove('correct', 'wrong');
+      });
+
+      wordsConfig.forEach(w => {
+        let isCorrect = true;
+        let inputsInWord = [];
+
+        for (let i = 0; i < w.answer.length; i++) {
+          let currR = w.dir === 'across' ? w.row : w.row + i;
+          let currC = w.dir === 'across' ? w.col + i : w.col;
+          const input = document.querySelector(`input[data-r="${currR}"][data-c="${currC}"]`);
+          
+          inputsInWord.push(input.parentElement);
+
+          if (!input.value || input.value.toUpperCase() !== w.answer[i]) {
+            isCorrect = false;
+          }
+        }
+
+        if (isCorrect) {
+          correctWordsCount++;
+          inputsInWord.forEach(cell => cell.classList.add('correct'));
+        } else {
+          inputsInWord.forEach(cell => {
+            if (!cell.classList.contains('correct')) {
+              cell.classList.add('wrong');
+            }
+          });
+        }
+      });
+
+      document.querySelectorAll('.cell.correct').forEach(cell => cell.classList.remove('wrong'));
+
+      const percentage = Math.round((correctWordsCount / totalWords) * 100);
+      const result = document.getElementById('result');
+      
+      result.textContent = `Nilai ${name}: ${correctWordsCount} dari ${totalWords} Kata Benar (${percentage}%).`;
+      result.style.color = correctWordsCount === totalWords ? '#047857' : '#b45309';
+
+      const now = new Date().toLocaleString('id-ID');
+      const scoreText = `Nama Peserta: ${name}\nUnit/Ruangan: ${unit || '-'}\nWaktu: ${now}\nSkor Benar: ${correctWordsCount} Kata\nTotal Pertanyaan: ${totalWords} Kata\nPersentase: ${percentage}%`;
+
+      const scoreCard = document.getElementById('scoreCard');
+      scoreCard.style.display = 'block';
+      scoreCard.dataset.score = scoreText;
+      scoreCard.innerHTML = `
+        <strong>Hasil Nilai Peserta</strong><br>
+        Nama Peserta: ${name}<br>
+        Unit/Ruangan: ${unit || '-'}<br>
+        Waktu: ${now}<br>
+        Skor Benar: ${correctWordsCount} dari ${totalWords} Pertanyaan<br>
+        Persentase: ${percentage}%
+      `;
+
+      window.saveToLeaderboard(name, unit, correctWordsCount, percentage, totalWords);
+    };
+
+    /* === FIREBASE === */
     window.saveToLeaderboard = function(name, unit, correct, percentage, total) {
       const now = new Date().toLocaleString('id-ID');
 
-      // 1. SIMPAN SEMUA RIWAYAT PESERTA (Tidak ditimpa)
       const historyRef = ref(db, 'submissions');
-      const newSubmissionRef = push(historyRef); // Membuat ID acak untuk setiap kiriman
-      set(newSubmissionRef, {
-        name: name,
-        unit: unit,
-        correct: correct,
-        total: total,
-        percentage: percentage,
-        timestamp: now
-      });
+      const newSubmissionRef = push(historyRef);
+      set(newSubmissionRef, { name, unit, correct, total, percentage, timestamp: now });
 
-      // 2. SIMPAN KE LEADERBOARD (Ambil nilai yang tertinggi)
       const userId = (name + "_" + unit).replace(/[^a-zA-Z0-9]/g, "_").toLowerCase();
       const userRef = ref(db, 'leaderboard/' + userId);
 
@@ -590,21 +741,15 @@
         } else {
           set(userRef, { name, unit, correct, percentage, timestamp: now });
         }
-      }).catch((error) => {
-        console.error("Error saving to database: ", error);
       });
     }
 
-    // Menampilkan Leaderboard
     const leaderboardRef = ref(db, 'leaderboard');
     onValue(leaderboardRef, (snapshot) => {
       let leaderboard = [];
-      snapshot.forEach((childSnapshot) => {
-        leaderboard.push(childSnapshot.val());
-      });
+      snapshot.forEach((child) => leaderboard.push(child.val()));
 
       leaderboard.sort((a, b) => b.correct - a.correct);
-
       const list = document.getElementById('leaderboardList');
       list.innerHTML = '';
 
@@ -626,134 +771,60 @@
     });
 
     window.clearLeaderboard = function() {
-      if(confirm("Apakah Anda yakin ingin menghapus semua data (Leaderboard & Riwayat) dari database?")) {
+      if(confirm("Apakah Anda yakin ingin menghapus semua data dari database?")) {
         remove(ref(db, 'leaderboard'));
-        remove(ref(db, 'submissions')).then(() => {
-           alert("Semua data berhasil dikosongkan.");
-        }).catch((error) => {
-           console.error("Gagal menghapus data: ", error);
-        });
+        remove(ref(db, 'submissions')).then(() => alert("Semua data berhasil dikosongkan."));
       }
-    }
-
-    window.checkAnswers = function() {
-      const name = document.getElementById('participantName').value.trim();
-      const unit = document.getElementById('participantUnit').value.trim();
-
-      if (!name) {
-        alert('Mohon isi nama peserta terlebih dahulu.');
-        document.getElementById('participantName').focus();
-        return;
-      }
-
-      let total = 0;
-      let correct = 0;
-      document.querySelectorAll('.cell').forEach(cell => {
-        const input = cell.querySelector('input');
-        total++;
-        cell.classList.remove('correct', 'wrong');
-
-        if (input.value.toUpperCase() === input.dataset.answer) {
-          correct++;
-          cell.classList.add('correct');
-        } else {
-          cell.classList.add('wrong');
-        }
-      });
-
-      const percentage = Math.round((correct / total) * 100);
-      const result = document.getElementById('result');
-      result.textContent = `Nilai ${name}: ${correct} dari ${total} kotak benar (${percentage}%).`;
-      result.style.color = correct === total ? '#047857' : '#b45309';
-
-      const now = new Date().toLocaleString('id-ID');
-      const scoreText = `Nama Peserta: ${name}\nUnit/Ruangan: ${unit || '-'}\nWaktu: ${now}\nSkor Benar: ${correct}\nTotal Kotak: ${total}\nPersentase: ${percentage}%`;
-
-      const scoreCard = document.getElementById('scoreCard');
-      scoreCard.style.display = 'block';
-      scoreCard.dataset.score = scoreText;
-      scoreCard.innerHTML = `
-        <strong>Hasil Nilai Peserta</strong><br>
-        Nama Peserta: ${name}<br>
-        Unit/Ruangan: ${unit || '-'}<br>
-        Waktu: ${now}<br>
-        Skor Benar: ${correct} dari ${total}<br>
-        Persentase: ${percentage}%
-      `;
-
-      // Simpan skor ke Firebase dengan parameter total
-      window.saveToLeaderboard(name, unit, correct, percentage, total);
     }
 
     window.resetGrid = function() {
-      document.querySelectorAll('.cell').forEach(cell => {
-        const input = cell.querySelector('input');
-        input.value = '';
-        cell.classList.remove('correct', 'wrong');
-      });
+      document.querySelectorAll('.cell input').forEach(input => input.value = '');
+      document.querySelectorAll('.cell').forEach(cell => cell.classList.remove('correct', 'wrong', 'active-word'));
       document.getElementById('result').textContent = '';
       const scoreCard = document.getElementById('scoreCard');
       scoreCard.style.display = 'none';
       scoreCard.dataset.score = '';
       scoreCard.innerHTML = '';
+      activeWordId = null;
     }
 
     window.copyScore = function() {
-      const scoreCard = document.getElementById('scoreCard');
-      const scoreText = scoreCard.dataset.score;
-
-      if (!scoreText) {
-        alert('Klik Cek Jawaban terlebih dahulu sebelum menyalin nilai.');
-        return;
-      }
-
+      const scoreText = document.getElementById('scoreCard').dataset.score;
+      if (!scoreText) return alert('Klik Cek Jawaban terlebih dahulu sebelum menyalin nilai.');
       navigator.clipboard.writeText(scoreText).then(() => {
         alert('Nilai peserta berhasil disalin. Silakan paste dan kirim ke host.');
-      }).catch(() => {
-        alert('Gagal menyalin otomatis. Silakan screenshot hasil nilai.');
       });
     }
 
     window.showAnswers = function() {
-      if (!window.isHost) {
-        alert('Jawaban hanya dapat ditampilkan oleh host.');
-        return;
-      }
-      document.querySelectorAll('.cell').forEach(cell => {
-        const input = cell.querySelector('input');
-        input.value = input.dataset.answer;
-        cell.classList.remove('wrong');
-        cell.classList.add('correct');
+      if (!window.isHost) return alert('Hanya host yang dapat menampilkan jawaban.');
+      
+      wordsConfig.forEach(w => {
+        for (let i = 0; i < w.answer.length; i++) {
+          let currR = w.dir === 'across' ? w.row : w.row + i;
+          let currC = w.dir === 'across' ? w.col + i : w.col;
+          const input = document.querySelector(`input[data-r="${currR}"][data-c="${currC}"]`);
+          input.value = w.answer[i];
+          input.parentElement.classList.remove('wrong');
+          input.parentElement.classList.add('correct');
+        }
       });
-      const result = document.getElementById('result');
-      result.textContent = 'Semua jawaban telah ditampilkan untuk host.';
-      result.style.color = '#047857';
+      document.getElementById('result').textContent = 'Semua jawaban telah ditampilkan.';
+      document.getElementById('result').style.color = '#047857';
     }
 
     window.toggleKey = function() {
-      if (!window.isHost) {
-        alert('Kunci jawaban hanya dapat dilihat oleh host.');
-        return;
-      }
+      if (!window.isHost) return alert('Kunci jawaban hanya dapat dilihat oleh host.');
       const key = document.getElementById('answerKey');
       key.style.display = key.style.display === 'block' ? 'none' : 'block';
     }
 
     window.hostLogin = function() {
-      const pass = prompt('Masukkan password host:');
-      if (pass === HOST_PASSWORD) {
+      if (prompt('Masukkan password host:') === HOST_PASSWORD) {
         window.isHost = true;
-        document.querySelectorAll('.host-only').forEach(btn => {
-          btn.style.display = 'inline-block';
-        });
-        
-        const hostStatus = document.getElementById('hostStatus');
-        if (hostStatus) {
-            hostStatus.textContent = 'Mode host aktif: akses penuh terbuka.';
-            hostStatus.style.color = '#f37021';
-        }
+        document.querySelectorAll('.host-only').forEach(btn => btn.style.display = 'inline-block');
         document.getElementById('hostLoginBtn').style.display = 'none';
-      } else if (pass !== null) {
+      } else {
         alert('Password salah.');
       }
     }
