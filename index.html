@@ -474,9 +474,76 @@
     const db = getDatabase(app);
 
     const HOST_PASSWORD = 'ibnu123!';
-    window.isHost = false; 
+    window.isHost = false;
 
-    /* === KOORDINAT SESUAI FOTO 1 (BERDEKATAN & MENGALIR) === */
+    /* ============================================================
+       TIMER — mulai saat huruf pertama diketik, berhenti saat cek
+    ============================================================ */
+    let timerStarted  = false;
+    let timerInterval = null;
+    let startTime     = null;
+    let elapsedSeconds = 0;
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      return `${m}:${s.toString().padStart(2, '0')}`;
+    }
+
+    function startTimer() {
+      if (timerStarted) return;
+      timerStarted = true;
+      startTime = Date.now();
+
+      // Inject timer display above the grid (new element, tidak ubah HTML/CSS existing)
+      if (!document.getElementById('timerDisplay')) {
+        const el = document.createElement('div');
+        el.id = 'timerDisplay';
+        el.style.cssText = [
+          'text-align:center',
+          'font-size:16px',
+          'font-weight:bold',
+          'color:#003c71',
+          'margin-bottom:10px',
+          'padding:8px 14px',
+          'background:#e6f0fa',
+          'border-radius:8px',
+          'letter-spacing:0.5px'
+        ].join(';');
+        el.textContent = '⏱ Waktu: 0:00';
+        const gridWrap = document.querySelector('.grid-wrap');
+        gridWrap.parentElement.insertBefore(el, gridWrap);
+      }
+
+      timerInterval = setInterval(() => {
+        elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+        const el = document.getElementById('timerDisplay');
+        if (el) el.textContent = `⏱ Waktu: ${formatTime(elapsedSeconds)}`;
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (!timerStarted) return;
+      clearInterval(timerInterval);
+      timerInterval = null;
+      elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+      const el = document.getElementById('timerDisplay');
+      if (el) el.textContent = `⏱ Waktu selesai: ${formatTime(elapsedSeconds)}`;
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      timerInterval  = null;
+      timerStarted   = false;
+      startTime      = null;
+      elapsedSeconds = 0;
+      const el = document.getElementById('timerDisplay');
+      if (el) el.textContent = '⏱ Waktu: 0:00';
+    }
+
+    /* ============================================================
+       KONFIGURASI KATA
+    ============================================================ */
     const wordsConfig = [
       { id: 1,  num: 1,  dir: 'down',   row: 0,  col: 6,  answer: 'MRSA' },
       { id: 2,  num: 2,  dir: 'down',   row: 0,  col: 15, answer: 'LIMA' },
@@ -509,11 +576,18 @@
     const ROWS = 18;
     const COLS = 20;
     let gridData = [];
-    let currentDirection = 'across'; 
-    let activeWordId = null;
+    let currentDirection = 'across';
+    let activeWordId     = null;
 
-    /* === GENERATE GRID OTOMATIS === */
-    window.createGrid = function() {
+    /* ============================================================
+       FLAG untuk membedakan fokus manual (klik) vs. programatik
+       (navigasi antar huruf dalam 1 kata).
+       Tanpa flag ini kursor bisa lompat ke kata/kolom lain.
+    ============================================================ */
+    let isProgrammaticFocus = false;
+
+    /* === GENERATE GRID === */
+    window.createGrid = function () {
       for (let r = 0; r < ROWS; r++) {
         let row = [];
         for (let c = 0; c < COLS; c++) row.push({ empty: true });
@@ -521,19 +595,15 @@
       }
 
       wordsConfig.forEach(w => {
-        let r = w.row;
-        let c = w.col;
-        
+        let r = w.row, c = w.col;
         if (gridData[r][c].empty) {
           gridData[r][c] = { empty: false, num: w.num, words: {} };
         } else {
           gridData[r][c].num = w.num;
         }
-
         for (let i = 0; i < w.answer.length; i++) {
           let currR = w.dir === 'across' ? r : r + i;
           let currC = w.dir === 'across' ? c + i : c;
-
           if (gridData[currR][currC].empty) {
             gridData[currR][currC] = { empty: false, words: {} };
           }
@@ -543,37 +613,37 @@
 
       const container = document.getElementById('crossword');
       container.innerHTML = '';
-      
+
       for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLS; c++) {
           const cell = gridData[r][c];
-          const div = document.createElement('div');
-          
+          const div  = document.createElement('div');
+
           if (cell.empty) {
             div.className = 'black';
           } else {
-            div.className = 'cell';
-            div.dataset.r = r;
-            div.dataset.c = c;
-            
+            div.className   = 'cell';
+            div.dataset.r   = r;
+            div.dataset.c   = c;
+
             if (cell.num) {
               const span = document.createElement('span');
-              span.className = 'num';
+              span.className   = 'num';
               span.textContent = cell.num;
               div.appendChild(span);
             }
-            
+
             const input = document.createElement('input');
-            input.maxLength = 1;
-            input.dataset.r = r;
-            input.dataset.c = c;
-            input.dataset.across = cell.words['across'] || '';
-            input.dataset.down = cell.words['down'] || '';
-            
-            input.addEventListener('focus', () => handleFocus(input));
-            input.addEventListener('input', (e) => handleInput(e, input));
+            input.maxLength       = 1;
+            input.dataset.r       = r;
+            input.dataset.c       = c;
+            input.dataset.across  = cell.words['across'] || '';
+            input.dataset.down    = cell.words['down']   || '';
+
+            input.addEventListener('focus',   () => handleFocus(input));
+            input.addEventListener('input',   (e) => handleInput(e, input));
             input.addEventListener('keydown', (e) => handleKeyDown(e, input));
-            
+
             div.appendChild(input);
           }
           container.appendChild(div);
@@ -581,14 +651,36 @@
       }
     };
 
-    /* === LOGIKA NAVIGASI KURSOR === */
+    /* ============================================================
+       LOGIKA NAVIGASI KURSOR (FIXED)
+       — handleFocus hanya toggle arah saat klik manual
+       — moveNext & moveFocus pakai flag isProgrammaticFocus
+         sehingga kursor TIDAK lompat ke kata/kolom lain
+    ============================================================ */
     function handleFocus(input) {
       const acrossId = input.dataset.across;
-      const downId = input.dataset.down;
+      const downId   = input.dataset.down;
 
+      if (isProgrammaticFocus) {
+        /* Navigasi otomatis: pertahankan arah & kata aktif */
+        isProgrammaticFocus = false;
+        // pastikan sel ini memang bagian dari kata aktif
+        const validId = currentDirection === 'across' ? acrossId : downId;
+        if (validId) {
+          activeWordId = validId;
+        } else {
+          // jika sel tidak punya arah aktif saat ini, balik ke arah lain
+          currentDirection = currentDirection === 'across' ? 'down' : 'across';
+          activeWordId = currentDirection === 'across' ? acrossId : downId;
+        }
+        highlightActiveWord();
+        return;
+      }
+
+      /* Klik manual: logika toggle arah di persilangan */
       if (acrossId && downId) {
-        if (activeWordId == acrossId) currentDirection = 'down';
-        else if (activeWordId == downId) currentDirection = 'across';
+        if (activeWordId == acrossId)      currentDirection = 'down';
+        else if (activeWordId == downId)   currentDirection = 'across';
         else currentDirection = currentDirection === 'across' ? 'across' : 'down';
       } else {
         currentDirection = acrossId ? 'across' : 'down';
@@ -600,6 +692,7 @@
 
     function handleInput(e, input) {
       input.value = input.value.toUpperCase();
+      startTimer(); // mulai timer saat huruf pertama diketik
       if (input.value) moveNext(input, 1);
     }
 
@@ -609,36 +702,45 @@
       } else if (e.key === 'Tab') {
         e.preventDefault();
         const acrossId = input.dataset.across;
-        const downId = input.dataset.down;
+        const downId   = input.dataset.down;
         if (acrossId && downId) {
-           currentDirection = currentDirection === 'across' ? 'down' : 'across';
-           activeWordId = currentDirection === 'across' ? acrossId : downId;
-           highlightActiveWord();
+          currentDirection = currentDirection === 'across' ? 'down' : 'across';
+          activeWordId     = currentDirection === 'across' ? acrossId : downId;
+          highlightActiveWord();
         }
-      } else if (e.key === 'ArrowRight') moveFocus(input, 0, 1);
-      else if (e.key === 'ArrowLeft') moveFocus(input, 0, -1);
-      else if (e.key === 'ArrowDown') moveFocus(input, 1, 0);
-      else if (e.key === 'ArrowUp') moveFocus(input, -1, 0);
+      } else if (e.key === 'ArrowRight') moveFocus(input, 0,  1, 'across');
+      else if   (e.key === 'ArrowLeft')  moveFocus(input, 0, -1, 'across');
+      else if   (e.key === 'ArrowDown')  moveFocus(input, 1,  0, 'down');
+      else if   (e.key === 'ArrowUp')    moveFocus(input, -1, 0, 'down');
     }
 
+    /* Pindah ke huruf berikutnya / sebelumnya DALAM KATA YANG SAMA */
     function moveNext(input, step) {
       let r = parseInt(input.dataset.r);
       let c = parseInt(input.dataset.c);
-      
+
       if (currentDirection === 'across') c += step;
       else r += step;
 
       const nextInput = document.querySelector(`input[data-r="${r}"][data-c="${c}"]`);
       if (nextInput && nextInput.dataset[currentDirection] == activeWordId) {
+        isProgrammaticFocus = true;
         nextInput.focus();
       }
+      /* Jika sel berikutnya bukan bagian dari kata yang sama,
+         kursor BERHENTI — tidak lompat ke mana-mana */
     }
 
-    function moveFocus(input, rOffset, cOffset) {
+    /* Pindah dengan tombol panah — sesuaikan arah lalu set flag */
+    function moveFocus(input, rOffset, cOffset, newDir) {
       let r = parseInt(input.dataset.r) + rOffset;
       let c = parseInt(input.dataset.c) + cOffset;
       const nextInput = document.querySelector(`input[data-r="${r}"][data-c="${c}"]`);
-      if (nextInput) nextInput.focus();
+      if (nextInput) {
+        if (newDir) currentDirection = newDir;
+        isProgrammaticFocus = true;
+        nextInput.focus();
+      }
     }
 
     function highlightActiveWord() {
@@ -649,8 +751,10 @@
       });
     }
 
-    /* === SISTEM PENILAIAN PER KATA === */
-    window.checkAnswers = function() {
+    /* ============================================================
+       SISTEM PENILAIAN
+    ============================================================ */
+    window.checkAnswers = function () {
       const name = document.getElementById('participantName').value.trim();
       const unit = document.getElementById('participantUnit').value.trim();
 
@@ -660,27 +764,23 @@
         return;
       }
 
+      stopTimer(); // hentikan & catat waktu
+
       let correctWordsCount = 0;
       const totalWords = wordsConfig.length;
 
-      document.querySelectorAll('.cell').forEach(cell => {
-        cell.classList.remove('correct', 'wrong');
-      });
+      document.querySelectorAll('.cell').forEach(cell => cell.classList.remove('correct', 'wrong'));
 
       wordsConfig.forEach(w => {
         let isCorrect = true;
         let inputsInWord = [];
 
         for (let i = 0; i < w.answer.length; i++) {
-          let currR = w.dir === 'across' ? w.row : w.row + i;
-          let currC = w.dir === 'across' ? w.col + i : w.col;
+          let currR = w.dir === 'across' ? w.row       : w.row + i;
+          let currC = w.dir === 'across' ? w.col + i   : w.col;
           const input = document.querySelector(`input[data-r="${currR}"][data-c="${currC}"]`);
-          
           inputsInWord.push(input.parentElement);
-
-          if (!input.value || input.value.toUpperCase() !== w.answer[i]) {
-            isCorrect = false;
-          }
+          if (!input.value || input.value.toUpperCase() !== w.answer[i]) isCorrect = false;
         }
 
         if (isCorrect) {
@@ -688,9 +788,7 @@
           inputsInWord.forEach(cell => cell.classList.add('correct'));
         } else {
           inputsInWord.forEach(cell => {
-            if (!cell.classList.contains('correct')) {
-              cell.classList.add('wrong');
-            }
+            if (!cell.classList.contains('correct')) cell.classList.add('wrong');
           });
         }
       });
@@ -698,13 +796,14 @@
       document.querySelectorAll('.cell.correct').forEach(cell => cell.classList.remove('wrong'));
 
       const percentage = Math.round((correctWordsCount / totalWords) * 100);
-      const result = document.getElementById('result');
-      
-      result.textContent = `Nilai ${name}: ${correctWordsCount} dari ${totalWords} Kata Benar (${percentage}%).`;
+      const timeStr    = formatTime(elapsedSeconds);
+      const result     = document.getElementById('result');
+
+      result.textContent = `Nilai ${name}: ${correctWordsCount} dari ${totalWords} Kata Benar (${percentage}%) — Waktu: ${timeStr}`;
       result.style.color = correctWordsCount === totalWords ? '#047857' : '#b45309';
 
-      const now = new Date().toLocaleString('id-ID');
-      const scoreText = `Nama Peserta: ${name}\nUnit/Ruangan: ${unit || '-'}\nWaktu: ${now}\nSkor Benar: ${correctWordsCount} Kata\nTotal Pertanyaan: ${totalWords} Kata\nPersentase: ${percentage}%`;
+      const now       = new Date().toLocaleString('id-ID');
+      const scoreText = `Nama Peserta: ${name}\nUnit/Ruangan: ${unit || '-'}\nWaktu: ${now}\nSkor Benar: ${correctWordsCount} Kata\nTotal Pertanyaan: ${totalWords} Kata\nPersentase: ${percentage}%\nWaktu Pengerjaan: ${timeStr}`;
 
       const scoreCard = document.getElementById('scoreCard');
       scoreCard.style.display = 'block';
@@ -715,41 +814,59 @@
         Unit/Ruangan: ${unit || '-'}<br>
         Waktu: ${now}<br>
         Skor Benar: ${correctWordsCount} dari ${totalWords} Pertanyaan<br>
-        Persentase: ${percentage}%
+        Persentase: ${percentage}%<br>
+        Waktu Pengerjaan: ${timeStr}
       `;
 
-      window.saveToLeaderboard(name, unit, correctWordsCount, percentage, totalWords);
+      window.saveToLeaderboard(name, unit, correctWordsCount, percentage, totalWords, elapsedSeconds);
     };
 
-    /* === FIREBASE === */
-    window.saveToLeaderboard = function(name, unit, correct, percentage, total) {
+    /* ============================================================
+       FIREBASE — simpan & tampil leaderboard
+       Tiebreaker: nilai sama → waktu terpendek menang
+    ============================================================ */
+    window.saveToLeaderboard = function (name, unit, correct, percentage, total, timeSeconds) {
       const now = new Date().toLocaleString('id-ID');
 
-      const historyRef = ref(db, 'submissions');
+      // Simpan semua submission ke history
+      const historyRef       = ref(db, 'submissions');
       const newSubmissionRef = push(historyRef);
-      set(newSubmissionRef, { name, unit, correct, total, percentage, timestamp: now });
+      set(newSubmissionRef, { name, unit, correct, total, percentage, timeSeconds, timestamp: now });
 
-      const userId = (name + "_" + unit).replace(/[^a-zA-Z0-9]/g, "_").toLowerCase();
+      // Update leaderboard: simpan hanya jika skor lebih tinggi,
+      // atau skor sama tapi waktu lebih cepat
+      const userId  = (name + "_" + unit).replace(/[^a-zA-Z0-9]/g, "_").toLowerCase();
       const userRef = ref(db, 'leaderboard/' + userId);
 
       get(userRef).then((snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
-          if (correct > data.correct) {
-            set(userRef, { name, unit, correct, percentage, timestamp: now });
+          const isBetterScore = correct > data.correct;
+          const isFasterTime  = correct === data.correct &&
+                                timeSeconds < (data.timeSeconds ?? Infinity);
+          if (isBetterScore || isFasterTime) {
+            set(userRef, { name, unit, correct, percentage, timeSeconds, timestamp: now });
           }
         } else {
-          set(userRef, { name, unit, correct, percentage, timestamp: now });
+          set(userRef, { name, unit, correct, percentage, timeSeconds, timestamp: now });
         }
       });
-    }
+    };
 
+    /* Dengarkan perubahan leaderboard secara real-time */
     const leaderboardRef = ref(db, 'leaderboard');
     onValue(leaderboardRef, (snapshot) => {
       let leaderboard = [];
       snapshot.forEach((child) => leaderboard.push(child.val()));
 
-      leaderboard.sort((a, b) => b.correct - a.correct);
+      // Urut: skor tertinggi dulu; jika sama → waktu tercepat
+      leaderboard.sort((a, b) => {
+        if (b.correct !== a.correct) return b.correct - a.correct;
+        const tA = a.timeSeconds ?? Infinity;
+        const tB = b.timeSeconds ?? Infinity;
+        return tA - tB;
+      });
+
       const list = document.getElementById('leaderboardList');
       list.innerHTML = '';
 
@@ -759,50 +876,59 @@
       }
 
       leaderboard.slice(0, 10).forEach((p, index) => {
+        const timeLabel = p.timeSeconds != null ? ` · ${formatTime(p.timeSeconds)}` : '';
         const li = document.createElement('li');
         li.className = 'leaderboard-item';
         li.innerHTML = `
           <span class="rank">#${index + 1}</span>
-          <span class="player-info">${p.name} <small style="color:#666">(${p.unit || '-'})</small></span>
+          <span class="player-info">
+            ${p.name}
+            <small style="color:#666">(${p.unit || '-'}${timeLabel})</small>
+          </span>
           <span class="player-score">${p.percentage}%</span>
         `;
         list.appendChild(li);
       });
     });
 
-    window.clearLeaderboard = function() {
-      if(confirm("Apakah Anda yakin ingin menghapus semua data dari database?")) {
+    window.clearLeaderboard = function () {
+      if (confirm("Apakah Anda yakin ingin menghapus semua data dari database?")) {
         remove(ref(db, 'leaderboard'));
         remove(ref(db, 'submissions')).then(() => alert("Semua data berhasil dikosongkan."));
       }
-    }
+    };
 
-    window.resetGrid = function() {
+    /* ============================================================
+       TOMBOL UTILITAS
+    ============================================================ */
+    window.resetGrid = function () {
       document.querySelectorAll('.cell input').forEach(input => input.value = '');
-      document.querySelectorAll('.cell').forEach(cell => cell.classList.remove('correct', 'wrong', 'active-word'));
+      document.querySelectorAll('.cell').forEach(cell =>
+        cell.classList.remove('correct', 'wrong', 'active-word')
+      );
       document.getElementById('result').textContent = '';
       const scoreCard = document.getElementById('scoreCard');
       scoreCard.style.display = 'none';
       scoreCard.dataset.score = '';
       scoreCard.innerHTML = '';
       activeWordId = null;
-    }
+      resetTimer();
+    };
 
-    window.copyScore = function() {
+    window.copyScore = function () {
       const scoreText = document.getElementById('scoreCard').dataset.score;
       if (!scoreText) return alert('Klik Cek Jawaban terlebih dahulu sebelum menyalin nilai.');
       navigator.clipboard.writeText(scoreText).then(() => {
         alert('Nilai peserta berhasil disalin. Silakan paste dan kirim ke host.');
       });
-    }
+    };
 
-    window.showAnswers = function() {
+    window.showAnswers = function () {
       if (!window.isHost) return alert('Hanya host yang dapat menampilkan jawaban.');
-      
       wordsConfig.forEach(w => {
         for (let i = 0; i < w.answer.length; i++) {
-          let currR = w.dir === 'across' ? w.row : w.row + i;
-          let currC = w.dir === 'across' ? w.col + i : w.col;
+          let currR = w.dir === 'across' ? w.row       : w.row + i;
+          let currC = w.dir === 'across' ? w.col + i   : w.col;
           const input = document.querySelector(`input[data-r="${currR}"][data-c="${currC}"]`);
           input.value = w.answer[i];
           input.parentElement.classList.remove('wrong');
@@ -811,15 +937,15 @@
       });
       document.getElementById('result').textContent = 'Semua jawaban telah ditampilkan.';
       document.getElementById('result').style.color = '#047857';
-    }
+    };
 
-    window.toggleKey = function() {
+    window.toggleKey = function () {
       if (!window.isHost) return alert('Kunci jawaban hanya dapat dilihat oleh host.');
       const key = document.getElementById('answerKey');
       key.style.display = key.style.display === 'block' ? 'none' : 'block';
-    }
+    };
 
-    window.hostLogin = function() {
+    window.hostLogin = function () {
       if (prompt('Masukkan password host:') === HOST_PASSWORD) {
         window.isHost = true;
         document.querySelectorAll('.host-only').forEach(btn => btn.style.display = 'inline-block');
@@ -827,7 +953,7 @@
       } else {
         alert('Password salah.');
       }
-    }
+    };
 
     window.createGrid();
   </script>
