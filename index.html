@@ -457,7 +457,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, set, get, onValue, remove, push } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getDatabase, ref, set, onValue, remove, push, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBkmmsivbqmQVT3jiv3X5RmNb1Jjh9BPMY",
@@ -480,6 +480,7 @@
        TIMER — mulai saat huruf pertama diketik, berhenti saat cek
     ============================================================ */
     let timerStarted  = false;
+    let timerFinished = false;   // ← flag kunci: cegah stopTimer dipanggil >1×
     let timerInterval = null;
     let startTime     = null;
     let elapsedSeconds = 0;
@@ -491,11 +492,12 @@
     }
 
     function startTimer() {
-      if (timerStarted) return;
-      timerStarted = true;
-      startTime = Date.now();
+      if (timerStarted) return;           // sudah berjalan
+      timerStarted  = true;
+      timerFinished = false;
+      startTime     = Date.now();
 
-      // Inject timer display above the grid (new element, tidak ubah HTML/CSS existing)
+      // Inject timer display di atas grid (elemen baru, tidak ubah HTML/CSS existing)
       if (!document.getElementById('timerDisplay')) {
         const el = document.createElement('div');
         el.id = 'timerDisplay';
@@ -516,14 +518,16 @@
       }
 
       timerInterval = setInterval(() => {
-        elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
         const el = document.getElementById('timerDisplay');
-        if (el) el.textContent = `⏱ Waktu: ${formatTime(elapsedSeconds)}`;
+        if (el) el.textContent = `⏱ Waktu: ${formatTime(Math.floor((Date.now() - startTime) / 1000))}`;
       }, 1000);
     }
 
     function stopTimer() {
-      if (!timerStarted) return;
+      // BUG FIX: hanya jalankan sekali per sesi — cegah elapsedSeconds membengkak
+      // jika "Cek Jawaban" diklik lebih dari 1×
+      if (!timerStarted || timerFinished) return;
+      timerFinished = true;
       clearInterval(timerInterval);
       timerInterval = null;
       elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
@@ -535,6 +539,7 @@
       clearInterval(timerInterval);
       timerInterval  = null;
       timerStarted   = false;
+      timerFinished  = false;
       startTime      = null;
       elapsedSeconds = 0;
       const el = document.getElementById('timerDisplay');
@@ -823,48 +828,62 @@
 
     /* ============================================================
        FIREBASE — simpan & tampil leaderboard
-       Tiebreaker: nilai sama → waktu terpendek menang
+       FIX UTAMA:
+       - Tulis submissions (history semua submit) → selalu berhasil
+       - Tulis leaderboard pakai runTransaction (atomik, tidak race condition)
+       - Tampilkan leaderboard dari node 'submissions' real-time,
+         group per peserta di sisi client → tidak bergantung pada
+         reliabilitas leaderboard node
     ============================================================ */
     window.saveToLeaderboard = function (name, unit, correct, percentage, total, timeSeconds) {
       const now = new Date().toLocaleString('id-ID');
+      const payload = { name, unit, correct, total, percentage, timeSeconds, timestamp: now };
 
-      // Simpan semua submission ke history
-      const historyRef       = ref(db, 'submissions');
-      const newSubmissionRef = push(historyRef);
-      set(newSubmissionRef, { name, unit, correct, total, percentage, timeSeconds, timestamp: now });
+      // 1. Simpan ke submissions (history lengkap)
+      push(ref(db, 'submissions'), payload)
+        .catch(err => console.error('submissions write error:', err));
 
-      // Update leaderboard: simpan hanya jika skor lebih tinggi,
-      // atau skor sama tapi waktu lebih cepat
-      const userId  = (name + "_" + unit).replace(/[^a-zA-Z0-9]/g, "_").toLowerCase();
-      const userRef = ref(db, 'leaderboard/' + userId);
-
-      get(userRef).then((snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          const isBetterScore = correct > data.correct;
-          const isFasterTime  = correct === data.correct &&
-                                timeSeconds < (data.timeSeconds ?? Infinity);
-          if (isBetterScore || isFasterTime) {
-            set(userRef, { name, unit, correct, percentage, timeSeconds, timestamp: now });
-          }
-        } else {
-          set(userRef, { name, unit, correct, percentage, timeSeconds, timestamp: now });
+      // 2. Update leaderboard pakai transaction — atomik, tidak bisa gagal diam-diam
+      const userId  = (name + '_' + (unit || '')).replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+      runTransaction(ref(db, 'leaderboard/' + userId), (current) => {
+        if (current === null) {
+          // Belum ada → simpan langsung
+          return { name, unit, correct, percentage, timeSeconds, timestamp: now };
         }
-      });
+        const isBetter = correct > current.correct;
+        const isFaster = correct === current.correct &&
+                         timeSeconds < (current.timeSeconds ?? Infinity);
+        // Kembalikan data baru hanya jika lebih baik; jika tidak, biarkan data lama
+        return (isBetter || isFaster)
+          ? { name, unit, correct, percentage, timeSeconds, timestamp: now }
+          : current;
+      }).catch(err => console.error('leaderboard transaction error:', err));
     };
 
-    /* Dengarkan perubahan leaderboard secara real-time */
-    const leaderboardRef = ref(db, 'leaderboard');
-    onValue(leaderboardRef, (snapshot) => {
-      let leaderboard = [];
-      snapshot.forEach((child) => leaderboard.push(child.val()));
+    /* Tampilkan leaderboard dari 'submissions' (baca semua, group client-side)
+       Ini memastikan SEMUA peserta tampil meski leaderboard node punya masalah */
+    onValue(ref(db, 'submissions'), (snapshot) => {
+      const best = {};
+      snapshot.forEach((child) => {
+        const s   = child.val();
+        const key = ((s.name || '') + '|' + (s.unit || '')).toLowerCase();
+        const prev = best[key];
+        if (!prev) {
+          best[key] = s;
+        } else {
+          const isBetter = (s.correct ?? 0) > (prev.correct ?? 0);
+          const isFaster  = s.correct === prev.correct &&
+                            (s.timeSeconds ?? Infinity) < (prev.timeSeconds ?? Infinity);
+          if (isBetter || isFaster) best[key] = s;
+        }
+      });
 
-      // Urut: skor tertinggi dulu; jika sama → waktu tercepat
-      leaderboard.sort((a, b) => {
-        if (b.correct !== a.correct) return b.correct - a.correct;
+      const leaderboard = Object.values(best).sort((a, b) => {
+        if ((b.correct ?? 0) !== (a.correct ?? 0)) return (b.correct ?? 0) - (a.correct ?? 0);
         const tA = a.timeSeconds ?? Infinity;
         const tB = b.timeSeconds ?? Infinity;
-        return tA - tB;
+        if (tA !== tB) return tA - tB;
+        return (a.name || '').localeCompare(b.name || '');
       });
 
       const list = document.getElementById('leaderboardList');
@@ -876,25 +895,32 @@
       }
 
       leaderboard.slice(0, 10).forEach((p, index) => {
-        const timeLabel = p.timeSeconds != null ? ` · ${formatTime(p.timeSeconds)}` : '';
+        const timeLabel = (p.timeSeconds != null) ? ` · ${formatTime(p.timeSeconds)}` : '';
         const li = document.createElement('li');
         li.className = 'leaderboard-item';
         li.innerHTML = `
           <span class="rank">#${index + 1}</span>
           <span class="player-info">
-            ${p.name}
+            ${p.name || '-'}
             <small style="color:#666">(${p.unit || '-'}${timeLabel})</small>
           </span>
-          <span class="player-score">${p.percentage}%</span>
+          <span class="player-score">${p.percentage ?? 0}%</span>
         `;
         list.appendChild(li);
       });
+    }, (error) => {
+      console.error('onValue submissions error:', error);
+      document.getElementById('leaderboardList').innerHTML =
+        '<li class="leaderboard-item" style="color:red">Gagal memuat data.</li>';
     });
 
     window.clearLeaderboard = function () {
-      if (confirm("Apakah Anda yakin ingin menghapus semua data dari database?")) {
-        remove(ref(db, 'leaderboard'));
-        remove(ref(db, 'submissions')).then(() => alert("Semua data berhasil dikosongkan."));
+      if (confirm('Apakah Anda yakin ingin menghapus semua data dari database?')) {
+        Promise.all([
+          remove(ref(db, 'submissions')),
+          remove(ref(db, 'leaderboard'))
+        ]).then(() => alert('Semua data berhasil dikosongkan.'))
+          .catch(err => alert('Gagal reset: ' + err.message));
       }
     };
 
