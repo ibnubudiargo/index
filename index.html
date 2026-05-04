@@ -45,7 +45,6 @@
       font-size: 15px;
     }
 
-    /* Layout Top Section */
     .top-section {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -109,7 +108,6 @@
       line-height: 1.6;
     }
 
-    /* Leaderboard Styles */
     .leaderboard-list {
       list-style: none;
       padding: 0;
@@ -164,11 +162,10 @@
       margin-bottom: 15px;
     }
 
-    /* TEMA GAMBAR 2: Kotak Berdekatan, Rounded, Biru Navy */
     .grid {
       display: grid;
       grid-template-columns: repeat(20, 32px);
-      gap: 4px; /* Memberikan jarak berdekatan antar kotak seperti Gambar 2 */
+      gap: 4px;
       justify-content: center;
       min-width: max-content;
       margin: 0 auto;
@@ -177,11 +174,11 @@
     .cell, .black {
       width: 32px;
       height: 32px;
-      border-radius: 6px; /* Sudut membulat seperti Gambar 2 */
+      border-radius: 6px;
     }
 
     .black {
-      background: var(--emc-navy); /* Warna biru gelap untuk kotak kosong */
+      background: var(--emc-navy);
     }
 
     .cell {
@@ -197,7 +194,7 @@
       font-weight: bold;
       text-transform: uppercase;
       border: 1px solid #a0aab5;
-      border-radius: 6px; /* Membulat */
+      border-radius: 6px;
       background: transparent;
       box-sizing: border-box;
       cursor: pointer;
@@ -211,7 +208,12 @@
       outline: none;
     }
 
-    .cell.active-word input {
+    .cell input:disabled {
+      cursor: not-allowed;
+      opacity: 1;
+    }
+
+    .cell.active-word input:not(:disabled) {
       background-color: #fff3ed;
     }
 
@@ -225,6 +227,19 @@
       line-height: 1;
       font-weight: bold;
       pointer-events: none;
+    }
+
+    .locked-banner {
+      display: none;
+      text-align: center;
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      color: #856404;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 10px;
     }
 
     .clues {
@@ -300,6 +315,15 @@
 
     button:hover {
       background: var(--emc-orange-hover);
+    }
+
+    button:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
+
+    button:disabled:hover {
+      background: #aaa;
     }
 
     .secondary {
@@ -389,12 +413,16 @@
 
     <div class="content">
       <div>
+        <div class="locked-banner" id="lockedBanner">
+          🔒 Jawaban telah dikunci. Tekan <strong>Ulangi</strong> untuk mengerjakan ulang dari awal.
+        </div>
+
         <div class="grid-wrap">
           <div class="grid" id="crossword"></div>
         </div>
 
         <div class="buttons">
-          <button onclick="checkAnswers()">Cek Jawaban</button>
+          <button id="btnCek" onclick="checkAnswers()">Cek Jawaban</button>
           <button class="secondary" onclick="copyScore()">Salin Nilai</button>
           <button class="secondary" onclick="resetGrid()">Ulangi</button>
           <button class="secondary" onclick="hostLogin()" id="hostLoginBtn">Masuk Host</button>
@@ -457,7 +485,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, set, onValue, remove, push, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getDatabase, ref, onValue, remove, push, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBkmmsivbqmQVT3jiv3X5RmNb1Jjh9BPMY",
@@ -471,18 +499,25 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    const db  = getDatabase(app);
 
     const HOST_PASSWORD = 'ibnu123!';
     window.isHost = false;
 
     /* ============================================================
-       TIMER — mulai saat huruf pertama diketik, berhenti saat cek
+       FLAG: sudah cek jawaban atau belum
+       true  → grid dikunci, tombol Cek dinonaktifkan, Firebase tidak ditulis lagi
+       false → peserta masih boleh mengisi & cek
     ============================================================ */
-    let timerStarted  = false;
-    let timerFinished = false;   // ← flag kunci: cegah stopTimer dipanggil >1×
-    let timerInterval = null;
-    let startTime     = null;
+    let hasChecked = false;
+
+    /* ============================================================
+       TIMER
+    ============================================================ */
+    let timerStarted   = false;
+    let timerFinished  = false;
+    let timerInterval  = null;
+    let startTime      = null;
     let elapsedSeconds = 0;
 
     function formatTime(seconds) {
@@ -492,12 +527,11 @@
     }
 
     function startTimer() {
-      if (timerStarted) return;           // sudah berjalan
+      if (timerStarted) return;
       timerStarted  = true;
       timerFinished = false;
       startTime     = Date.now();
 
-      // Inject timer display di atas grid (elemen baru, tidak ubah HTML/CSS existing)
       if (!document.getElementById('timerDisplay')) {
         const el = document.createElement('div');
         el.id = 'timerDisplay';
@@ -524,12 +558,10 @@
     }
 
     function stopTimer() {
-      // BUG FIX: hanya jalankan sekali per sesi — cegah elapsedSeconds membengkak
-      // jika "Cek Jawaban" diklik lebih dari 1×
       if (!timerStarted || timerFinished) return;
-      timerFinished = true;
+      timerFinished  = true;
       clearInterval(timerInterval);
-      timerInterval = null;
+      timerInterval  = null;
       elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
       const el = document.getElementById('timerDisplay');
       if (el) el.textContent = `⏱ Waktu selesai: ${formatTime(elapsedSeconds)}`;
@@ -580,16 +612,23 @@
 
     const ROWS = 18;
     const COLS = 20;
-    let gridData = [];
-    let currentDirection = 'across';
-    let activeWordId     = null;
-
-    /* ============================================================
-       FLAG untuk membedakan fokus manual (klik) vs. programatik
-       (navigasi antar huruf dalam 1 kata).
-       Tanpa flag ini kursor bisa lompat ke kata/kolom lain.
-    ============================================================ */
+    let gridData            = [];
+    let currentDirection    = 'across';
+    let activeWordId        = null;
     let isProgrammaticFocus = false;
+
+    /* === KUNCI SEMUA INPUT & TOMBOL CEK === */
+    function lockGrid() {
+      document.querySelectorAll('.cell input').forEach(input => {
+        input.disabled = true;
+      });
+      const btnCek = document.getElementById('btnCek');
+      if (btnCek) {
+        btnCek.disabled = true;
+        btnCek.title    = 'Jawaban sudah dikunci. Tekan Ulangi untuk mengerjakan ulang.';
+      }
+      document.getElementById('lockedBanner').style.display = 'block';
+    }
 
     /* === GENERATE GRID === */
     window.createGrid = function () {
@@ -607,7 +646,7 @@
           gridData[r][c].num = w.num;
         }
         for (let i = 0; i < w.answer.length; i++) {
-          let currR = w.dir === 'across' ? r : r + i;
+          let currR = w.dir === 'across' ? r     : r + i;
           let currC = w.dir === 'across' ? c + i : c;
           if (gridData[currR][currC].empty) {
             gridData[currR][currC] = { empty: false, words: {} };
@@ -632,18 +671,18 @@
             div.dataset.c   = c;
 
             if (cell.num) {
-              const span = document.createElement('span');
+              const span       = document.createElement('span');
               span.className   = 'num';
               span.textContent = cell.num;
               div.appendChild(span);
             }
 
-            const input = document.createElement('input');
-            input.maxLength       = 1;
-            input.dataset.r       = r;
-            input.dataset.c       = c;
-            input.dataset.across  = cell.words['across'] || '';
-            input.dataset.down    = cell.words['down']   || '';
+            const input          = document.createElement('input');
+            input.maxLength      = 1;
+            input.dataset.r      = r;
+            input.dataset.c      = c;
+            input.dataset.across = cell.words['across'] || '';
+            input.dataset.down   = cell.words['down']   || '';
 
             input.addEventListener('focus',   () => handleFocus(input));
             input.addEventListener('input',   (e) => handleInput(e, input));
@@ -657,34 +696,27 @@
     };
 
     /* ============================================================
-       LOGIKA NAVIGASI KURSOR (FIXED)
-       — handleFocus hanya toggle arah saat klik manual
-       — moveNext & moveFocus pakai flag isProgrammaticFocus
-         sehingga kursor TIDAK lompat ke kata/kolom lain
+       NAVIGASI KURSOR
     ============================================================ */
     function handleFocus(input) {
       const acrossId = input.dataset.across;
       const downId   = input.dataset.down;
 
       if (isProgrammaticFocus) {
-        /* Navigasi otomatis: pertahankan arah & kata aktif */
         isProgrammaticFocus = false;
-        // pastikan sel ini memang bagian dari kata aktif
         const validId = currentDirection === 'across' ? acrossId : downId;
         if (validId) {
           activeWordId = validId;
         } else {
-          // jika sel tidak punya arah aktif saat ini, balik ke arah lain
           currentDirection = currentDirection === 'across' ? 'down' : 'across';
-          activeWordId = currentDirection === 'across' ? acrossId : downId;
+          activeWordId     = currentDirection === 'across' ? acrossId : downId;
         }
         highlightActiveWord();
         return;
       }
 
-      /* Klik manual: logika toggle arah di persilangan */
       if (acrossId && downId) {
-        if (activeWordId == acrossId)      currentDirection = 'down';
+        if      (activeWordId == acrossId) currentDirection = 'down';
         else if (activeWordId == downId)   currentDirection = 'across';
         else currentDirection = currentDirection === 'across' ? 'across' : 'down';
       } else {
@@ -697,7 +729,7 @@
 
     function handleInput(e, input) {
       input.value = input.value.toUpperCase();
-      startTimer(); // mulai timer saat huruf pertama diketik
+      startTimer();
       if (input.value) moveNext(input, 1);
     }
 
@@ -713,30 +745,24 @@
           activeWordId     = currentDirection === 'across' ? acrossId : downId;
           highlightActiveWord();
         }
-      } else if (e.key === 'ArrowRight') moveFocus(input, 0,  1, 'across');
-      else if   (e.key === 'ArrowLeft')  moveFocus(input, 0, -1, 'across');
-      else if   (e.key === 'ArrowDown')  moveFocus(input, 1,  0, 'down');
-      else if   (e.key === 'ArrowUp')    moveFocus(input, -1, 0, 'down');
+      } else if (e.key === 'ArrowRight') moveFocus(input,  0,  1, 'across');
+      else if   (e.key === 'ArrowLeft')  moveFocus(input,  0, -1, 'across');
+      else if   (e.key === 'ArrowDown')  moveFocus(input,  1,  0, 'down');
+      else if   (e.key === 'ArrowUp')    moveFocus(input, -1,  0, 'down');
     }
 
-    /* Pindah ke huruf berikutnya / sebelumnya DALAM KATA YANG SAMA */
     function moveNext(input, step) {
       let r = parseInt(input.dataset.r);
       let c = parseInt(input.dataset.c);
-
       if (currentDirection === 'across') c += step;
       else r += step;
-
       const nextInput = document.querySelector(`input[data-r="${r}"][data-c="${c}"]`);
       if (nextInput && nextInput.dataset[currentDirection] == activeWordId) {
         isProgrammaticFocus = true;
         nextInput.focus();
       }
-      /* Jika sel berikutnya bukan bagian dari kata yang sama,
-         kursor BERHENTI — tidak lompat ke mana-mana */
     }
 
-    /* Pindah dengan tombol panah — sesuaikan arah lalu set flag */
     function moveFocus(input, rOffset, cOffset, newDir) {
       let r = parseInt(input.dataset.r) + rOffset;
       let c = parseInt(input.dataset.c) + cOffset;
@@ -758,8 +784,15 @@
 
     /* ============================================================
        SISTEM PENILAIAN
+       Hanya cek PERTAMA yang:
+         1. Menghitung nilai & menampilkan hasil
+         2. Menyimpan ke Firebase (submissions + leaderboard)
+         3. Mengunci seluruh grid
+       Klik ke-2 dan seterusnya → diabaikan (tombol sudah disabled)
     ============================================================ */
     window.checkAnswers = function () {
+      if (hasChecked) return; // pagar ganda — seharusnya tidak tercapai karena tombol disabled
+
       const name = document.getElementById('participantName').value.trim();
       const unit = document.getElementById('participantUnit').value.trim();
 
@@ -769,20 +802,22 @@
         return;
       }
 
-      stopTimer(); // hentikan & catat waktu
+      // Tandai sudah dicek & hentikan timer SEBELUM mengunci
+      hasChecked = true;
+      stopTimer();
 
       let correctWordsCount = 0;
-      const totalWords = wordsConfig.length;
+      const totalWords      = wordsConfig.length;
 
       document.querySelectorAll('.cell').forEach(cell => cell.classList.remove('correct', 'wrong'));
 
       wordsConfig.forEach(w => {
-        let isCorrect = true;
+        let isCorrect    = true;
         let inputsInWord = [];
 
         for (let i = 0; i < w.answer.length; i++) {
-          let currR = w.dir === 'across' ? w.row       : w.row + i;
-          let currC = w.dir === 'across' ? w.col + i   : w.col;
+          let currR = w.dir === 'across' ? w.row     : w.row + i;
+          let currC = w.dir === 'across' ? w.col + i : w.col;
           const input = document.querySelector(`input[data-r="${currR}"][data-c="${currC}"]`);
           inputsInWord.push(input.parentElement);
           if (!input.value || input.value.toUpperCase() !== w.answer[i]) isCorrect = false;
@@ -800,6 +835,9 @@
 
       document.querySelectorAll('.cell.correct').forEach(cell => cell.classList.remove('wrong'));
 
+      // Kunci grid setelah penilaian selesai
+      lockGrid();
+
       const percentage = Math.round((correctWordsCount / totalWords) * 100);
       const timeStr    = formatTime(elapsedSeconds);
       const result     = document.getElementById('result');
@@ -812,7 +850,7 @@
 
       const scoreCard = document.getElementById('scoreCard');
       scoreCard.style.display = 'block';
-      scoreCard.dataset.score = scoreText;
+      scoreCard.dataset.score  = scoreText;
       scoreCard.innerHTML = `
         <strong>Hasil Nilai Peserta</strong><br>
         Nama Peserta: ${name}<br>
@@ -823,57 +861,46 @@
         Waktu Pengerjaan: ${timeStr}
       `;
 
+      // Simpan ke Firebase — hanya sekali karena hasChecked mencegah pengulangan
       window.saveToLeaderboard(name, unit, correctWordsCount, percentage, totalWords, elapsedSeconds);
     };
 
     /* ============================================================
        FIREBASE — simpan & tampil leaderboard
-       FIX UTAMA:
-       - Tulis submissions (history semua submit) → selalu berhasil
-       - Tulis leaderboard pakai runTransaction (atomik, tidak race condition)
-       - Tampilkan leaderboard dari node 'submissions' real-time,
-         group per peserta di sisi client → tidak bergantung pada
-         reliabilitas leaderboard node
     ============================================================ */
     window.saveToLeaderboard = function (name, unit, correct, percentage, total, timeSeconds) {
-      const now = new Date().toLocaleString('id-ID');
+      const now     = new Date().toLocaleString('id-ID');
       const payload = { name, unit, correct, total, percentage, timeSeconds, timestamp: now };
 
-      // 1. Simpan ke submissions (history lengkap)
       push(ref(db, 'submissions'), payload)
         .catch(err => console.error('submissions write error:', err));
 
-      // 2. Update leaderboard pakai transaction — atomik, tidak bisa gagal diam-diam
-      const userId  = (name + '_' + (unit || '')).replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+      const userId = (name + '_' + (unit || '')).replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
       runTransaction(ref(db, 'leaderboard/' + userId), (current) => {
         if (current === null) {
-          // Belum ada → simpan langsung
           return { name, unit, correct, percentage, timeSeconds, timestamp: now };
         }
         const isBetter = correct > current.correct;
         const isFaster = correct === current.correct &&
                          timeSeconds < (current.timeSeconds ?? Infinity);
-        // Kembalikan data baru hanya jika lebih baik; jika tidak, biarkan data lama
         return (isBetter || isFaster)
           ? { name, unit, correct, percentage, timeSeconds, timestamp: now }
           : current;
       }).catch(err => console.error('leaderboard transaction error:', err));
     };
 
-    /* Tampilkan leaderboard dari 'submissions' (baca semua, group client-side)
-       Ini memastikan SEMUA peserta tampil meski leaderboard node punya masalah */
     onValue(ref(db, 'submissions'), (snapshot) => {
       const best = {};
       snapshot.forEach((child) => {
-        const s   = child.val();
-        const key = ((s.name || '') + '|' + (s.unit || '')).toLowerCase();
+        const s    = child.val();
+        const key  = ((s.name || '') + '|' + (s.unit || '')).toLowerCase();
         const prev = best[key];
         if (!prev) {
           best[key] = s;
         } else {
           const isBetter = (s.correct ?? 0) > (prev.correct ?? 0);
-          const isFaster  = s.correct === prev.correct &&
-                            (s.timeSeconds ?? Infinity) < (prev.timeSeconds ?? Infinity);
+          const isFaster = s.correct === prev.correct &&
+                           (s.timeSeconds ?? Infinity) < (prev.timeSeconds ?? Infinity);
           if (isBetter || isFaster) best[key] = s;
         }
       });
@@ -896,9 +923,9 @@
 
       leaderboard.slice(0, 10).forEach((p, index) => {
         const timeLabel = (p.timeSeconds != null) ? ` · ${formatTime(p.timeSeconds)}` : '';
-        const li = document.createElement('li');
-        li.className = 'leaderboard-item';
-        li.innerHTML = `
+        const li        = document.createElement('li');
+        li.className    = 'leaderboard-item';
+        li.innerHTML    = `
           <span class="rank">#${index + 1}</span>
           <span class="player-info">
             ${p.name || '-'}
@@ -928,15 +955,30 @@
        TOMBOL UTILITAS
     ============================================================ */
     window.resetGrid = function () {
-      document.querySelectorAll('.cell input').forEach(input => input.value = '');
+      // Reset flag — peserta bisa isi & cek ulang dari awal
+      hasChecked = false;
+
+      document.querySelectorAll('.cell input').forEach(input => {
+        input.value    = '';
+        input.disabled = false;
+      });
       document.querySelectorAll('.cell').forEach(cell =>
         cell.classList.remove('correct', 'wrong', 'active-word')
       );
+
       document.getElementById('result').textContent = '';
-      const scoreCard = document.getElementById('scoreCard');
-      scoreCard.style.display = 'none';
-      scoreCard.dataset.score = '';
-      scoreCard.innerHTML = '';
+
+      const scoreCard          = document.getElementById('scoreCard');
+      scoreCard.style.display  = 'none';
+      scoreCard.dataset.score  = '';
+      scoreCard.innerHTML      = '';
+
+      const btnCek     = document.getElementById('btnCek');
+      btnCek.disabled  = false;
+      btnCek.title     = '';
+
+      document.getElementById('lockedBanner').style.display = 'none';
+
       activeWordId = null;
       resetTimer();
     };
@@ -953,10 +995,12 @@
       if (!window.isHost) return alert('Hanya host yang dapat menampilkan jawaban.');
       wordsConfig.forEach(w => {
         for (let i = 0; i < w.answer.length; i++) {
-          let currR = w.dir === 'across' ? w.row       : w.row + i;
-          let currC = w.dir === 'across' ? w.col + i   : w.col;
+          let currR = w.dir === 'across' ? w.row     : w.row + i;
+          let currC = w.dir === 'across' ? w.col + i : w.col;
           const input = document.querySelector(`input[data-r="${currR}"][data-c="${currC}"]`);
-          input.value = w.answer[i];
+          input.disabled = false;
+          input.value    = w.answer[i];
+          input.disabled = true;
           input.parentElement.classList.remove('wrong');
           input.parentElement.classList.add('correct');
         }
@@ -967,8 +1011,8 @@
 
     window.toggleKey = function () {
       if (!window.isHost) return alert('Kunci jawaban hanya dapat dilihat oleh host.');
-      const key = document.getElementById('answerKey');
-      key.style.display = key.style.display === 'block' ? 'none' : 'block';
+      const key          = document.getElementById('answerKey');
+      key.style.display  = key.style.display === 'block' ? 'none' : 'block';
     };
 
     window.hostLogin = function () {
