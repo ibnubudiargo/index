@@ -2,924 +2,1130 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Teka-Teki Silang PPI Online</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>TTS PPI – Clean Hands Save Lives</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --emc-navy: #003c71;
-      --emc-navy-hover: #00284d;
-      --emc-orange: #f37021;
-      --emc-orange-hover: #d65d18;
-      --bg-light: #f8f9fa;
-      --text-main: #333333;
-      --border-color: #e0e0e0;
+      --navy:   #003c71;
+      --navy2:  #00284d;
+      --orange: #f37021;
+      --orange2:#d65d18;
+      --green:  #10b981;
+      --red:    #ef4444;
+      --bg:     #f0f4f8;
+      --white:  #ffffff;
+      --border: #dde3ea;
+      --text:   #1a2332;
+      --muted:  #6b7a8d;
+      --cell-size: 34px;
     }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: Arial, sans-serif;
-      background: var(--bg-light);
-      margin: 0;
-      padding: 20px;
-      color: var(--text-main);
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
     }
 
-    .container {
-      max-width: 1280px;
-      margin: auto;
-      background: #ffffff;
-      padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-    }
-
-    h1 {
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, var(--navy) 0%, #005aad 100%);
+      color: #fff;
+      padding: 18px 20px 16px;
       text-align: center;
-      color: var(--emc-navy);
-      margin-bottom: 6px;
+      position: relative;
+      overflow: hidden;
     }
-
-    .subtitle {
-      text-align: center;
-      color: #666;
-      margin-bottom: 24px;
-      font-size: 15px;
+    .header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Ccircle fill='rgba(255,255,255,0.04)' cx='20' cy='20' r='18'/%3E%3C/g%3E%3C/svg%3E") repeat;
+      pointer-events: none;
     }
-
-    .subtitle1 {
-      text-align: center;
-      color: #ff0000;
-      margin-bottom: 24px;
-      font-size: 15px;
+    .header h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(16px, 4vw, 22px);
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      margin-bottom: 4px;
+      position: relative;
     }
-
-    .top-section {
-      margin-bottom: 24px;
+    .header p {
+      font-size: 12px;
+      opacity: 0.8;
+      position: relative;
     }
-
-    .box-panel {
-      background: #ffffff;
-      border: 1px solid var(--border-color);
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-    }
-
-    .box-panel h2 {
-      margin: 0 0 16px;
-      color: var(--emc-navy);
-      font-size: 18px;
-      border-bottom: 2px solid var(--emc-orange);
-      padding-bottom: 8px;
+    .seed-badge {
       display: inline-block;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      margin-top: 6px;
+      position: relative;
+      letter-spacing: 0.5px;
     }
 
+    /* ── Container ── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--white);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+    .card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--navy);
+      border-bottom: 2px solid var(--orange);
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+      display: inline-block;
+      letter-spacing: 0.2px;
+    }
+
+    /* ── Form ── */
     .form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
     }
-
+    @media (max-width: 500px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
     .form-group label {
       display: block;
-      font-weight: bold;
-      margin-bottom: 6px;
-      font-size: 14px;
-      color: var(--emc-navy);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
-
     .form-group input {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #a0aab5;
-      border-radius: 6px;
-      font-size: 15px;
-      box-sizing: border-box;
-      transition: border-color 0.3s;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: 'Nunito', sans-serif;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      color: var(--text);
     }
-
     .form-group input:focus {
       outline: none;
-      border-color: var(--emc-orange);
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(243,112,33,0.12);
     }
 
-    .score-card {
-      display: none;
-      margin-top: 16px;
-      padding: 14px;
-      background: #f0f4f8;
-      border-left: 4px solid var(--emc-orange);
-      border-radius: 6px;
-      line-height: 1.6;
-    }
-
-    .content {
-      display: grid;
-      grid-template-columns: 1.1fr 1fr;
-      gap: 28px;
-      align-items: start;
-    }
-
-    .grid-wrap {
-      overflow-x: auto;
-      padding: 12px 0;
-      margin-bottom: 15px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(20, 32px);
-      gap: 4px;
-      justify-content: center;
-      min-width: max-content;
-      margin: 0 auto;
-    }
-
-    .cell, .black {
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
-    }
-
-    .black {
-      background: var(--emc-navy);
-    }
-
-    .cell {
-      position: relative;
-      background: #fff;
-    }
-
-    .cell input {
-      width: 100%;
-      height: 100%;
+    /* ── Timer ── */
+    #timerDisplay {
       text-align: center;
-      font-size: 15px;
-      font-weight: bold;
-      text-transform: uppercase;
-      border: 1px solid #a0aab5;
-      border-radius: 6px;
-      background: transparent;
-      box-sizing: border-box;
-      cursor: pointer;
-      padding: 0;
-      margin: 0;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--navy);
+      background: linear-gradient(135deg, #e8f0fa, #dde8f5);
+      border-radius: 8px;
+      padding: 8px 14px;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
     }
 
-    .cell input:focus {
-      border-color: var(--emc-orange);
-      background: #fff9f5;
-      outline: none;
-    }
-
-    .cell input:disabled {
-      cursor: not-allowed;
-      opacity: 1;
-    }
-
-    .cell.active-word input:not(:disabled) {
-      background-color: #fff3ed;
-    }
-
-    .num {
-      position: absolute;
-      top: 2px;
-      left: 4px;
-      font-size: 10px;
-      color: var(--emc-navy);
-      z-index: 2;
-      line-height: 1;
-      font-weight: bold;
-      pointer-events: none;
-    }
-
+    /* ── Alert / Banner ── */
     .locked-banner {
       display: none;
-      text-align: center;
       background: #fff3cd;
       border: 1px solid #ffc107;
       color: #856404;
       border-radius: 8px;
       padding: 10px 14px;
-      font-size: 14px;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
-    .clues {
-      background: #ffffff;
-      border: 1px solid var(--border-color);
-      padding: 20px;
-      border-radius: 10px;
-      max-height: 760px;
-      overflow-y: auto;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-    }
-
-    .clue-columns {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-
-    .clues h2 {
-      color: var(--emc-navy);
-      margin: 0 0 12px;
-      font-size: 18px;
-      border-bottom: 2px solid var(--emc-orange);
-      padding-bottom: 6px;
-      display: inline-block;
-    }
-
-    .clues ol {
-      padding-left: 22px;
-      margin-top: 0;
-    }
-
-    .clues li {
-      margin-bottom: 10px;
-      line-height: 1.5;
-      font-size: 14px;
-    }
-
-    .answer-key {
-      margin-top: 20px;
-      background: #fff3ed;
-      border: 1px solid #fbd8c7;
-      border-radius: 8px;
-      padding: 16px;
-      display: none;
-    }
-
-    .answer-key h3 {
-      margin: 0 0 10px;
-      color: var(--emc-orange);
-    }
-
-    .buttons {
+      font-size: 13px;
+      font-weight: 700;
       text-align: center;
-      margin-top: 18px;
+      margin-bottom: 10px;
+    }
+    .warning-note {
+      background: #fff5f5;
+      border-left: 3px solid var(--red);
+      color: #9b1c1c;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    /* ── Layout: grid + clue ── */
+    .play-area {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 860px) {
+      .play-area { grid-template-columns: 1fr; }
+    }
+
+    /* ── Crossword Grid ── */
+    .grid-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 8px;
+    }
+    .grid {
+      display: grid;
+      gap: 3px;
+      justify-content: start;
+    }
+
+    .black { border-radius: 5px; background: var(--navy); }
+    .cell  { position: relative; border-radius: 5px; background: var(--white); }
+
+    .cell input {
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+      text-transform: uppercase;
+      border: 1.5px solid #b8c4d0;
+      border-radius: 5px;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      color: var(--text);
+      transition: border-color 0.15s, background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      /* Prevent zoom on iOS */
+      font-size: max(13px, 1em);
+    }
+    .cell input:focus {
+      border-color: var(--orange);
+      background: #fff8f3;
+      outline: none;
+    }
+    .cell input:disabled { cursor: not-allowed; opacity: 1; }
+
+    .cell.active-word input:not(:disabled) {
+      background: #fff3e8;
+      border-color: #f3a060;
+    }
+
+    .num {
+      position: absolute;
+      top: 2px;
+      left: 3px;
+      font-size: 8px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      color: var(--navy);
+      z-index: 2;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .cell.correct input { background: #d1fae5 !important; border-color: #10b981 !important; color: #065f46 !important; }
+    .cell.wrong   input { background: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b !important; }
+
+    /* ── Clue Panel ── */
+    .clue-panel {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      overflow: hidden;
+      position: sticky;
+      top: 16px;
+    }
+    @media (max-width: 860px) {
+      .clue-panel { position: static; }
+    }
+    .clue-panel-header {
+      background: var(--navy);
+      color: #fff;
+      padding: 12px 16px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    .clue-panel-body {
+      padding: 16px;
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .clue-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: #b0bec9;
+      text-align: center;
+      padding: 16px 0;
+    }
+    .clue-empty-icon { font-size: 30px; opacity: 0.5; }
+    .clue-empty-text { font-size: 13px; line-height: 1.5; }
+    .clue-active { display: none; animation: fadeIn .2s ease; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .clue-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--orange);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      letter-spacing: 0.3px;
+    }
+    .clue-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+    .clue-direction {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 10px;
+    }
+    .clue-text {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text);
+      font-weight: 600;
+      border-left: 3px solid var(--orange);
+      padding-left: 12px;
+    }
+    .clue-divider {
+      border: none;
+      border-top: 1px dashed var(--border);
+      margin: 14px 0;
+    }
+    .clue-secondary { opacity: 0.7; }
+
+    /* ── All clues list (mobile accordion) ── */
+    .clue-list-toggle {
+      display: none;
+      width: 100%;
+      background: var(--navy);
+      color: #fff;
+      border: none;
+      padding: 11px 16px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: left;
+      margin-bottom: 8px;
+    }
+    @media (max-width: 860px) {
+      .clue-list-toggle { display: block; }
+    }
+    .clue-list-panel {
+      display: none;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+    .clue-list-panel.open { display: block; }
+    .clue-list-panel h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 4px;
+    }
+    .clue-list-panel .item { padding: 3px 0; }
+    .clue-list-panel .item span { font-weight: 800; color: var(--orange); margin-right: 4px; }
+
+    /* ── Buttons ── */
+    .buttons {
       display: flex;
       flex-wrap: wrap;
-      justify-content: center;
       gap: 8px;
+      justify-content: center;
+      margin-top: 14px;
     }
-
-    button {
-      background: var(--emc-orange);
-      color: white;
+    button.btn {
+      background: var(--orange);
+      color: #fff;
       border: none;
-      padding: 11px 18px;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: bold;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: background 0.2s, transform 0.1s;
+      letter-spacing: 0.2px;
+      -webkit-tap-highlight-color: transparent;
     }
+    button.btn:active { transform: scale(0.97); }
+    button.btn:hover { background: var(--orange2); }
+    button.btn:disabled { background: #aab; cursor: not-allowed; }
+    button.btn.secondary { background: var(--navy); }
+    button.btn.secondary:hover { background: var(--navy2); }
+    button.btn.host-only { display: none; }
 
-    button:hover {
-      background: var(--emc-orange-hover);
-    }
-
-    button:disabled {
-      background: #aaa;
-      cursor: not-allowed;
-    }
-
-    button:disabled:hover {
-      background: #aaa;
-    }
-
-    .secondary {
-      background: var(--emc-navy);
-    }
-
-    .secondary:hover {
-      background: var(--emc-navy-hover);
-    }
-
-    .host-only {
-      display: none;
-    }
-
+    /* ── Result & Score ── */
     .result {
       text-align: center;
-      font-size: 18px;
-      font-weight: bold;
-      margin-top: 16px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 14px;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .score-card {
+      display: none;
+      margin-top: 12px;
+      padding: 14px;
+      background: #f0f7ff;
+      border-left: 4px solid var(--orange);
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.7;
     }
 
-    .correct input {
-      background-color: #d1fae5 !important;
-      border-color: #10b981 !important;
-      color: #065f46;
+    /* ── Answer Key ── */
+    .answer-key {
+      display: none;
+      margin-top: 12px;
+      background: #fff8f3;
+      border: 1px solid #fbd8c7;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 12px;
+      line-height: 1.8;
     }
+    .answer-key h3 { color: var(--orange); font-size: 13px; margin-bottom: 8px; }
 
-    .wrong input {
-      background-color: #fee2e2 !important;
-      border-color: #ef4444 !important;
-      color: #991b1b;
+    /* ── Scrollbar styling ── */
+    .grid-wrap::-webkit-scrollbar { height: 4px; }
+    .grid-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* ── Mobile: enlarge tap targets ── */
+    @media (max-width: 480px) {
+      :root { --cell-size: 30px; }
+      .card { padding: 14px; }
+      .container { padding: 10px; }
     }
-
-    @media (max-width: 980px) {
-      .content, .clue-columns {
-        grid-template-columns: 1fr;
-      }
-      .form-row {
-        grid-template-columns: 1fr;
-      }
-      .grid {
-        grid-template-columns: repeat(20, 28px);
-      }
-      .cell, .black {
-        width: 28px;
-        height: 28px;
-      }
-      .cell input {
-        font-size: 14px;
-      }
-      .buttons {
-        flex-direction: column;
-      }
-      button {
-        width: 100%;
-        margin: 0;
-      }
+    @media (max-width: 360px) {
+      :root { --cell-size: 26px; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Clean Hands Save Lives – TTS PPI Edition</h1>
-    <P class="subtitle"><strong>Isi kotak mengikuti alur (mendatar/menurun). Penilaian dihitung per pertanyaan.</strong></P>
-    <p class="subtitle1"><strong>Jawaban hanya dapat dikirim satu kali. Pastikan seluruh jawaban telah benar sebelum Anda mengirimkannya</strong></p>
 
-    <!-- Data Peserta (tanpa leaderboard) -->
-    <div class="top-section">
-      <div class="box-panel">
-        <h2>Data Peserta</h2>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="participantName">Nama Peserta</label>
-            <input type="text" id="participantName" placeholder="Masukkan nama peserta" />
-          </div>
-          <div class="form-group">
-            <label for="participantUnit">Unit / Ruangan</label>
-            <input type="text" id="participantUnit" placeholder="Contoh: Rawat Inap / ICU / Kelas" />
-          </div>
+  <div class="header">
+    <h1>🧼 Clean Hands Save Lives – TTS PPI Edition</h1>
+    <p>Klik kotak untuk melihat pertanyaan. Isi sesuai alur mendatar / menurun.</p>
+    <div class="seed-badge" id="seedBadge">Kode Unik: —</div>
+  </div>
+
+  <div class="container">
+
+    <!-- Data Peserta -->
+    <div class="card">
+      <span class="card-title">📋 Data Peserta</span>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="participantName">Nama Peserta</label>
+          <input type="text" id="participantName" placeholder="Masukkan nama peserta" autocomplete="name" />
         </div>
-        <div class="score-card" id="scoreCard"></div>
+        <div class="form-group">
+          <label for="participantUnit">Unit / Ruangan</label>
+          <input type="text" id="participantUnit" placeholder="Contoh: Rawat Inap / ICU" />
+        </div>
       </div>
+      <div class="warning-note">⚠️ Jawaban hanya dapat dikirim satu kali. Pastikan seluruh jawaban sudah benar sebelum mengirim.</div>
+      <div class="score-card" id="scoreCard"></div>
     </div>
 
-    <div class="content">
+    <!-- Mobile: daftar pertanyaan lipat -->
+    <button class="clue-list-toggle" onclick="toggleClueList()">📖 Lihat Semua Pertanyaan ▼</button>
+    <div class="clue-list-panel" id="clueListPanel">
+      <div id="clueListAcross"></div>
+      <div id="clueListDown" style="margin-top:10px"></div>
+    </div>
+
+    <!-- Play Area -->
+    <div class="play-area">
+
+      <!-- Grid Side -->
       <div>
-        <div class="locked-banner" id="lockedBanner">
-          🔒 Jawaban telah di kunci dan di kirim ke host anda tidak dapat mengerjakan kembali.
-        </div>
+        <div class="locked-banner" id="lockedBanner">🔒 Jawaban telah dikunci dan dikirim ke host.</div>
+        <div id="timerDisplay">⏱ Waktu: 0:00</div>
 
         <div class="grid-wrap">
           <div class="grid" id="crossword"></div>
         </div>
 
         <div class="buttons">
-          <button id="btnCek" onclick="checkAnswers()">Kirim Jawaban</button>
-          <button class="secondary" onclick="resetGrid()">Ulangi</button>
-          <button class="host-only" onclick="showAnswers()">Tampilkan Jawaban</button>
-          <button class="host-only secondary" onclick="toggleKey()">Kunci Jawaban</button>
-          <button class="host-only secondary" onclick="clearLeaderboard()">Reset Data (Host)</button>
+          <button class="btn" id="btnCek" onclick="checkAnswers()">✅ Kirim Jawaban</button>
+          <button class="btn secondary" onclick="resetGrid()">🔄 Ulangi</button>
+          <button class="btn host-only secondary" onclick="clearLeaderboard()">🗑 Reset Data</button>
         </div>
 
         <div class="result" id="result"></div>
+        <div class="answer-key" id="answerKey"><h3>Kunci Jawaban Host</h3><div id="answerKeyBody"></div></div>
       </div>
 
-      <div class="clues">
-        <div class="clue-columns">
-          <div>
-            <h2>Mendatar</h2>
-            <ol>
-              <li value="3">Salah satu upaya kegiatan mencegah dan meminimal insiden rate.</li>
-              <li value="6">APD yang tidak menggantikan cuci tangan.</li>
-              <li value="9">Sistem perawatan dengan diagnosa yang sama.</li>
-              <li value="10">Jenis masker yang digunakan untuk transmisi droplet.</li>
-              <li value="12">Penyakit dirawat di ruangan tekanan negatif.</li>
-              <li value="17">Pemrosesan alat kesehatan kritikal.</li>
-              <li value="18">Warna plastik tempat sampah kemoterapi.</li>
-              <li value="21">Penyakit yang dapat dicegah dengan mencuci tangan.</li>
-              <li value="22">Penyakit droplet transmisi.</li>
-              <li value="23">Istilah terbaru infeksi yang diperoleh setelah mendapatkan perawatan di fasilitas kesehatan.</li>
-              <li value="24">Infeksi terkait pelayanan kesehatan.</li>
-              <li value="25">Sistem tata udara di isolasi.</li>
-              <li value="26">Cara penyebaran kuman.</li>
-            </ol>
+      <!-- Clue Panel (desktop) -->
+      <div class="clue-panel">
+        <div class="clue-panel-header">💡 Petunjuk Pertanyaan</div>
+        <div class="clue-panel-body" id="clueBody">
+          <div class="clue-empty" id="clueEmpty">
+            <div class="clue-empty-icon">👆</div>
+            <div class="clue-empty-text">Klik salah satu kotak<br>untuk melihat pertanyaan.</div>
           </div>
-
-          <div>
-            <h2>Menurun</h2>
-            <ol>
-              <li value="1">Bakteri resisten di RS.</li>
-              <li value="2">Mengurangi risiko infeksi di sarmut urutan keberapa.</li>
-              <li value="4">Jenis pemeriksaan air RO.</li>
-              <li value="5">Menutupi hidung, mulut, dan dagu.</li>
-              <li value="7">Media transmisi penularan infeksi.</li>
-              <li value="8">Warna tempat sampah B3.</li>
-              <li value="11">Alat pelindung diri tenaga kesehatan.</li>
-              <li value="13">Pengawasan infeksi RS.</li>
-              <li value="14">Tangan tampak kotor, waktu 40–60 detik.</li>
-              <li value="15">Penggunaan peralatan disposable yang digunakan kembali.</li>
-              <li value="16">Transmisi yang menggunakan APD N95.</li>
-              <li value="19">World Hand Hygiene Day.</li>
-              <li value="20">Bagian tangan yang terakhir dibersihkan sesuai langkah HH.</li>
-            </ol>
+          <div class="clue-active" id="clueAcross">
+            <div class="clue-badge">↔ Mendatar</div>
+            <div class="clue-number" id="clueAcrossNum"></div>
+            <div class="clue-direction">Mendatar</div>
+            <div class="clue-text" id="clueAcrossText"></div>
+          </div>
+          <hr class="clue-divider" id="clueDivider" style="display:none">
+          <div class="clue-active clue-secondary" id="clueDown">
+            <div class="clue-badge">↕ Menurun</div>
+            <div class="clue-number" id="clueDownNum"></div>
+            <div class="clue-direction">Menurun</div>
+            <div class="clue-text" id="clueDownText"></div>
           </div>
         </div>
 
-        <div class="answer-key" id="answerKey">
-          <h3>Kunci Jawaban Host</h3>
-          <p><strong>Mendatar:</strong> 3 PPI, 6 SARUNGTANGAN, 9 KOHORT, 10 BEDAH, 12 MEASLES, 17 STERILISASI, 18 UNGU, 21 INFEKSI, 22 PNEUMONIA, 23 HAIS, 24 HAIS, 25 HEPA, 26 TRANSMISI.</p>
-          <p><strong>Menurun:</strong> 1 MRSA, 2 LIMA, 4 ENDOTOKSIN, 5 MASKER, 7 TANGAN, 8 COKELAT, 11 APD, 13 SURVEILANS, 14 HANDWASH, 15 REUSE, 16 AIRBORNE, 19 MEI, 20 KUKU.</p>
+        <!-- Full list di panel kanan (desktop) -->
+        <div style="padding: 0 16px 16px; border-top: 1px solid var(--border); margin-top: 4px;">
+          <details style="font-size:12px; cursor:pointer; margin-top:10px;">
+            <summary style="font-weight:700; color:var(--navy); margin-bottom:6px;">📄 Semua Pertanyaan</summary>
+            <div id="desktopClueAcross" style="margin-bottom:8px; line-height:1.9;"></div>
+            <div id="desktopClueDown" style="line-height:1.9;"></div>
+          </details>
         </div>
       </div>
+
     </div>
-  </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, remove, push, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+  </div><!-- /container -->
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBkmmsivbqmQVT3jiv3X5RmNb1Jjh9BPMY",
-      authDomain: "tekatekisialng.firebaseapp.com",
-      databaseURL: "https://tekatekisialng-default-rtdb.firebaseio.com",
-      projectId: "tekatekisialng",
-      storageBucket: "tekatekisialng.firebasestorage.app",
-      messagingSenderId: "1017835792664",
-      appId: "1:1017835792664:web:5acdbf600344ff8612d66d",
-      measurementId: "G-16XLLJNPZH"
-    };
+<script type="module">
+import { initializeApp }       from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getDatabase, ref, push, remove, runTransaction }
+                                from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    const app = initializeApp(firebaseConfig);
-    const db  = getDatabase(app);
+/* ── Firebase ── */
+const firebaseConfig = {
+  apiKey:            "AIzaSyBkmmsivbqmQVT3jiv3X5RmNb1Jjh9BPMY",
+  authDomain:        "tekatekisialng.firebaseapp.com",
+  databaseURL:       "https://tekatekisialng-default-rtdb.firebaseio.com",
+  projectId:         "tekatekisialng",
+  storageBucket:     "tekatekisialng.firebasestorage.app",
+  messagingSenderId: "1017835792664",
+  appId:             "1:1017835792664:web:5acdbf600344ff8612d66d",
+};
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
 
-    const HOST_PASSWORD = 'ibnu123!';
-    window.isHost = false;
+const HOST_PASSWORD = 'ibnu123!';
+window.isHost = false;
+let hasChecked = false;
 
-    let hasChecked = false;
+/* ================================================================
+   BANK SOAL MASTER (jawaban + pertanyaan lengkap)
+   Setiap item punya: answer, clueAcross / clueDown, dir, coords
+================================================================ */
+const MASTER_WORDS = [
+  // --- Dari file asli ---
+  { answer: 'MRSA',         dir: 'down',   row: 0,  col: 6,  clue: 'Bakteri resisten di RS.' },
+  { answer: 'LIMA',         dir: 'down',   row: 0,  col: 15, clue: 'Mengurangi risiko infeksi di sarmut urutan keberapa.' },
+  { answer: 'PPI',          dir: 'across', row: 1,  col: 13, clue: 'Salah satu upaya kegiatan mencegah dan meminimal insiden rate.' },
+  { answer: 'ENDOTOKSIN',   dir: 'down',   row: 2,  col: 9,  clue: 'Jenis pemeriksaan air RO.' },
+  { answer: 'MASKER',       dir: 'down',   row: 2,  col: 12, clue: 'Menutupi hidung, mulut, dan dagu.' },
+  { answer: 'SARUNGTANGAN', dir: 'across', row: 3,  col: 5,  clue: 'APD yang tidak menggantikan cuci tangan.' },
+  { answer: 'TANGAN',       dir: 'down',   row: 4,  col: 2,  clue: 'Media transmisi penularan infeksi.' },
+  { answer: 'COKELAT',      dir: 'down',   row: 4,  col: 4,  clue: 'Warna tempat sampah B3.' },
+  { answer: 'KOHORT',       dir: 'across', row: 6,  col: 4,  clue: 'Sistem perawatan dengan diagnosa yang sama.' },
+  { answer: 'BEDAH',        dir: 'across', row: 6,  col: 11, clue: 'Jenis masker yang digunakan untuk transmisi droplet.' },
+  { answer: 'APD',          dir: 'down',   row: 6,  col: 14, clue: 'Alat pelindung diri tenaga kesehatan.' },
+  { answer: 'MEASLES',      dir: 'across', row: 8,  col: 0,  clue: 'Penyakit dirawat di ruangan tekanan negatif.' },
+  { answer: 'SURVEILANS',   dir: 'down',   row: 8,  col: 6,  clue: 'Pengawasan infeksi RS.' },
+  { answer: 'HANDWASH',     dir: 'down',   row: 8,  col: 16, clue: 'Tangan tampak kotor, waktu 40–60 detik.' },
+  { answer: 'REUSE',        dir: 'down',   row: 8,  col: 18, clue: 'Penggunaan peralatan disposable yang digunakan kembali.' },
+  { answer: 'AIRBORNE',     dir: 'down',   row: 9,  col: 13, clue: 'Transmisi yang menggunakan APD N95.' },
+  { answer: 'STERILISASI',  dir: 'across', row: 10, col: 3,  clue: 'Pemrosesan alat kesehatan kritikal.' },
+  { answer: 'UNGU',         dir: 'across', row: 10, col: 15, clue: 'Warna plastik tempat sampah kemoterapi.' },
+  { answer: 'MEI',          dir: 'down',   row: 12, col: 3,  clue: 'World Hand Hygiene Day.' },
+  { answer: 'KUKU',         dir: 'down',   row: 12, col: 11, clue: 'Bagian tangan yang terakhir dibersihkan sesuai langkah HH.' },
+  { answer: 'INFEKSI',      dir: 'across', row: 13, col: 0,  clue: 'Penyakit yang dapat dicegah dengan mencuci tangan.' },
+  { answer: 'PNEUMONIA',    dir: 'across', row: 13, col: 8,  clue: 'Penyakit droplet transmisi.' },
+  { answer: 'HAIS',         dir: 'across', row: 15, col: 5,  clue: 'Istilah terbaru infeksi yang diperoleh setelah mendapatkan perawatan di fasilitas kesehatan.' },
+  { answer: 'HAIS',         dir: 'across', row: 15, col: 16, clue: 'Infeksi terkait pelayanan kesehatan.' },
+  { answer: 'HEPA',         dir: 'across', row: 16, col: 12, clue: 'Sistem tata udara di isolasi.' },
+  { answer: 'TRANSMISI',    dir: 'across', row: 17, col: 2,  clue: 'Cara penyebaran kuman.' },
+];
 
-    /* ============================================================
-       TIMER
-    ============================================================ */
-    let timerStarted   = false;
-    let timerFinished  = false;
-    let timerInterval  = null;
-    let startTime      = null;
-    let elapsedSeconds = 0;
+const ROWS = 18;
+const COLS = 20;
 
-    function formatTime(seconds) {
-      const m = Math.floor(seconds / 60);
-      const s = seconds % 60;
-      return `${m}:${s.toString().padStart(2, '0')}`;
+/* ================================================================
+   SEED PER PESERTA — seed unik tiap kali halaman dibuka
+   Digunakan untuk mengacak nomor urut tampilan pertanyaan
+================================================================ */
+const SESSION_SEED = Math.floor(Math.random() * 999999) + 1;
+document.getElementById('seedBadge').textContent = 'Kode Unik: ' + SESSION_SEED;
+
+/* ── Simple seeded shuffle (Fisher-Yates) ── */
+function seededRandom(seed) {
+  let s = seed;
+  return () => {
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    return (s >>> 0) / 0xffffffff;
+  };
+}
+
+function shuffleWithSeed(arr, seed) {
+  const rng  = seededRandom(seed);
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+/* ================================================================
+   BANGUN wordsConfig DARI MASTER — acak nomor urut per peserta
+================================================================ */
+// Pisahkan across & down lalu acak urutan penomoran masing-masing
+const masterAcross = MASTER_WORDS.filter(w => w.dir === 'across');
+const masterDown   = MASTER_WORDS.filter(w => w.dir === 'down');
+
+const shuffledAcross = shuffleWithSeed(masterAcross, SESSION_SEED);
+const shuffledDown   = shuffleWithSeed(masterDown,   SESSION_SEED + 7);
+
+// Gabungkan & beri nomor unik 1..N
+const allShuffled = [...shuffledAcross, ...shuffledDown];
+const wordsConfig = allShuffled.map((w, idx) => ({
+  id:     idx + 1,
+  num:    idx + 1,
+  dir:    w.dir,
+  row:    w.row,
+  col:    w.col,
+  answer: w.answer,
+  clue:   w.clue,
+}));
+
+/* ── Build cluesData dari wordsConfig ── */
+const cluesData = { across: {}, down: {} };
+wordsConfig.forEach(w => { cluesData[w.dir][w.num] = w.clue; });
+
+/* ── Build wordLookup ── */
+const wordLookup = {};
+wordsConfig.forEach(w => { wordLookup[w.id] = { num: w.num, dir: w.dir }; });
+
+/* ── Isi daftar pertanyaan (panel & mobile) ── */
+function buildClueList() {
+  const acrossItems = wordsConfig.filter(w => w.dir === 'across').sort((a,b) => a.num - b.num);
+  const downItems   = wordsConfig.filter(w => w.dir === 'down').sort((a,b) => a.num - b.num);
+
+  function renderList(items, containerId) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    const title = items[0]?.dir === 'across' ? '↔ Mendatar' : '↕ Menurun';
+    let html = `<h4>${title}</h4>`;
+    items.forEach(w => {
+      html += `<div class="item"><span>${w.num}.</span>${w.clue}</div>`;
+    });
+    el.innerHTML = html;
+  }
+
+  renderList(acrossItems, 'clueListAcross');
+  renderList(downItems,   'clueListDown');
+
+  // Desktop panel
+  const dA = document.getElementById('desktopClueAcross');
+  const dD = document.getElementById('desktopClueDown');
+  if (dA) {
+    let h = '<strong style="color:var(--navy);font-size:11px;">↔ MENDATAR</strong><br>';
+    acrossItems.forEach(w => { h += `<span style="font-weight:800;color:var(--orange)">${w.num}.</span> ${w.clue}<br>`; });
+    dA.innerHTML = h;
+  }
+  if (dD) {
+    let h = '<strong style="color:var(--navy);font-size:11px;">↕ MENURUN</strong><br>';
+    downItems.forEach(w => { h += `<span style="font-weight:800;color:var(--orange)">${w.num}.</span> ${w.clue}<br>`; });
+    dD.innerHTML = h;
+  }
+
+  // Answer key
+  const akBody = document.getElementById('answerKeyBody');
+  if (akBody) {
+    const aList = acrossItems.map(w => `${w.num} ${w.answer}`).join(', ');
+    const dList = downItems.map(w => `${w.num} ${w.answer}`).join(', ');
+    akBody.innerHTML = `<p><strong>Mendatar:</strong> ${aList}.</p><p><strong>Menurun:</strong> ${dList}.</p>`;
+  }
+}
+
+window.toggleClueList = function () {
+  const p = document.getElementById('clueListPanel');
+  p.classList.toggle('open');
+  const btn = document.querySelector('.clue-list-toggle');
+  btn.textContent = p.classList.contains('open') ? '📖 Sembunyikan Pertanyaan ▲' : '📖 Lihat Semua Pertanyaan ▼';
+};
+
+/* ================================================================
+   RESPONSIF: Hitung ukuran sel
+================================================================ */
+function calcCellSize() {
+  const w = Math.min(window.innerWidth, 600);
+  if (w < 360)      return 24;
+  else if (w < 480) return 28;
+  else if (w < 600) return 31;
+  return 34;
+}
+
+/* ================================================================
+   TIMER
+================================================================ */
+let timerFinished  = false;
+let timerInterval  = null;
+let startTime      = Date.now();
+let elapsedSeconds = 0;
+
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  return `${m}:${String(s % 60).padStart(2, '0')}`;
+}
+
+timerInterval = setInterval(() => {
+  if (timerFinished) return;
+  const el = document.getElementById('timerDisplay');
+  if (el) el.textContent = `⏱ Waktu: ${formatTime(Math.floor((Date.now() - startTime) / 1000))}`;
+}, 1000);
+
+function stopTimer() {
+  if (timerFinished) return;
+  timerFinished  = true;
+  clearInterval(timerInterval);
+  elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+  const el = document.getElementById('timerDisplay');
+  if (el) el.textContent = `⏱ Waktu selesai: ${formatTime(elapsedSeconds)}`;
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  timerFinished  = false;
+  startTime      = Date.now();
+  elapsedSeconds = 0;
+  const el = document.getElementById('timerDisplay');
+  if (el) el.textContent = '⏱ Waktu: 0:00';
+  timerInterval = setInterval(() => {
+    if (timerFinished) return;
+    const el = document.getElementById('timerDisplay');
+    if (el) el.textContent = `⏱ Waktu: ${formatTime(Math.floor((Date.now() - startTime) / 1000))}`;
+  }, 1000);
+}
+
+/* ================================================================
+   CLUE DISPLAY
+================================================================ */
+function showClue(acrossWordId, downWordId) {
+  const elEmpty   = document.getElementById('clueEmpty');
+  const elAcross  = document.getElementById('clueAcross');
+  const elDown    = document.getElementById('clueDown');
+  const elDivider = document.getElementById('clueDivider');
+
+  const hasA = acrossWordId && wordLookup[acrossWordId];
+  const hasD = downWordId   && wordLookup[downWordId];
+
+  if (!hasA && !hasD) { hideClue(); return; }
+
+  elEmpty.style.display = 'none';
+
+  if (hasA) {
+    const w = wordLookup[acrossWordId];
+    document.getElementById('clueAcrossNum').textContent  = w.num + '.';
+    document.getElementById('clueAcrossText').textContent = cluesData.across[w.num] || '—';
+    elAcross.style.display = 'block';
+    elAcross.style.animation = 'none'; elAcross.offsetHeight; elAcross.style.animation = '';
+  } else { elAcross.style.display = 'none'; }
+
+  elDivider.style.display = (hasA && hasD) ? 'block' : 'none';
+
+  if (hasD) {
+    const w = wordLookup[downWordId];
+    document.getElementById('clueDownNum').textContent  = w.num + '.';
+    document.getElementById('clueDownText').textContent = cluesData.down[w.num] || '—';
+    elDown.style.display = 'block';
+    elDown.style.animation = 'none'; elDown.offsetHeight; elDown.style.animation = '';
+  } else { elDown.style.display = 'none'; }
+}
+
+function hideClue() {
+  document.getElementById('clueEmpty').style.display   = 'flex';
+  document.getElementById('clueAcross').style.display  = 'none';
+  document.getElementById('clueDown').style.display    = 'none';
+  document.getElementById('clueDivider').style.display = 'none';
+}
+
+/* ================================================================
+   LOCK GRID
+================================================================ */
+function lockGrid() {
+  document.querySelectorAll('.cell input').forEach(inp => { inp.disabled = true; });
+  const btn = document.getElementById('btnCek');
+  if (btn) { btn.disabled = true; btn.title = 'Jawaban sudah dikunci.'; }
+  document.getElementById('lockedBanner').style.display = 'block';
+}
+
+/* ================================================================
+   BUILD GRID
+================================================================ */
+let gridData = [];
+let currentDirection    = 'across';
+let activeWordId        = null;
+let isProgrammaticFocus = false;
+
+window.createGrid = function () {
+  const cellSize = calcCellSize();
+  const container = document.getElementById('crossword');
+  container.style.gridTemplateColumns = `repeat(${COLS}, ${cellSize}px)`;
+  container.style.gridTemplateRows    = `repeat(${ROWS}, ${cellSize}px)`;
+
+  // init gridData
+  gridData = [];
+  for (let r = 0; r < ROWS; r++) {
+    const row = [];
+    for (let c = 0; c < COLS; c++) row.push({ empty: true });
+    gridData.push(row);
+  }
+
+  wordsConfig.forEach(w => {
+    let r = w.row, c = w.col;
+    if (gridData[r][c].empty) {
+      gridData[r][c] = { empty: false, num: w.num, words: {} };
+    } else {
+      gridData[r][c].num = gridData[r][c].num || w.num;
     }
-
-    function startTimer() {
-      if (timerStarted) return;
-      timerStarted  = true;
-      timerFinished = false;
-      startTime     = Date.now();
-
-      if (!document.getElementById('timerDisplay')) {
-        const el = document.createElement('div');
-        el.id = 'timerDisplay';
-        el.style.cssText = [
-          'text-align:center',
-          'font-size:16px',
-          'font-weight:bold',
-          'color:#003c71',
-          'margin-bottom:10px',
-          'padding:8px 14px',
-          'background:#e6f0fa',
-          'border-radius:8px',
-          'letter-spacing:0.5px'
-        ].join(';');
-        el.textContent = '⏱ Waktu: 0:00';
-        const gridWrap = document.querySelector('.grid-wrap');
-        gridWrap.parentElement.insertBefore(el, gridWrap);
-      }
-
-      timerInterval = setInterval(() => {
-        const el = document.getElementById('timerDisplay');
-        if (el) el.textContent = `⏱ Waktu: ${formatTime(Math.floor((Date.now() - startTime) / 1000))}`;
-      }, 1000);
+    for (let i = 0; i < w.answer.length; i++) {
+      const cr = w.dir === 'across' ? r     : r + i;
+      const cc = w.dir === 'across' ? c + i : c;
+      if (gridData[cr][cc].empty) gridData[cr][cc] = { empty: false, words: {} };
+      if (!gridData[cr][cc].words) gridData[cr][cc].words = {};
+      gridData[cr][cc].words[w.dir] = w.id;
     }
+  });
 
-    function stopTimer() {
-      if (!timerStarted || timerFinished) return;
-      timerFinished  = true;
-      clearInterval(timerInterval);
-      timerInterval  = null;
-      elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
-      const el = document.getElementById('timerDisplay');
-      if (el) el.textContent = `⏱ Waktu selesai: ${formatTime(elapsedSeconds)}`;
-    }
+  container.innerHTML = '';
 
-    function resetTimer() {
-      clearInterval(timerInterval);
-      timerInterval  = null;
-      timerStarted   = false;
-      timerFinished  = false;
-      startTime      = null;
-      elapsedSeconds = 0;
-      const el = document.getElementById('timerDisplay');
-      if (el) el.textContent = '⏱ Waktu: 0:00';
-    }
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const cell = gridData[r][c];
+      const div  = document.createElement('div');
+      div.style.width  = cellSize + 'px';
+      div.style.height = cellSize + 'px';
 
-    /* ============================================================
-       KONFIGURASI KATA
-    ============================================================ */
-    const wordsConfig = [
-      { id: 1,  num: 1,  dir: 'down',   row: 0,  col: 6,  answer: 'MRSA' },
-      { id: 2,  num: 2,  dir: 'down',   row: 0,  col: 15, answer: 'LIMA' },
-      { id: 3,  num: 3,  dir: 'across', row: 1,  col: 13, answer: 'PPI' },
-      { id: 4,  num: 4,  dir: 'down',   row: 2,  col: 9,  answer: 'ENDOTOKSIN' },
-      { id: 5,  num: 5,  dir: 'down',   row: 2,  col: 12, answer: 'MASKER' },
-      { id: 6,  num: 6,  dir: 'across', row: 3,  col: 5,  answer: 'SARUNGTANGAN' },
-      { id: 7,  num: 7,  dir: 'down',   row: 4,  col: 2,  answer: 'TANGAN' },
-      { id: 8,  num: 8,  dir: 'down',   row: 4,  col: 4,  answer: 'COKELAT' },
-      { id: 9,  num: 9,  dir: 'across', row: 6,  col: 4,  answer: 'KOHORT' },
-      { id: 10, num: 10, dir: 'across', row: 6,  col: 11, answer: 'BEDAH' },
-      { id: 11, num: 11, dir: 'down',   row: 6,  col: 14, answer: 'APD' },
-      { id: 12, num: 12, dir: 'across', row: 8,  col: 0,  answer: 'MEASLES' },
-      { id: 13, num: 13, dir: 'down',   row: 8,  col: 6,  answer: 'SURVEILANS' },
-      { id: 14, num: 14, dir: 'down',   row: 8,  col: 16, answer: 'HANDWASH' },
-      { id: 15, num: 15, dir: 'down',   row: 8,  col: 18, answer: 'REUSE' },
-      { id: 16, num: 16, dir: 'down',   row: 9,  col: 13, answer: 'AIRBORNE' },
-      { id: 17, num: 17, dir: 'across', row: 10, col: 3,  answer: 'STERILISASI' },
-      { id: 18, num: 18, dir: 'across', row: 10, col: 15, answer: 'UNGU' },
-      { id: 19, num: 19, dir: 'down',   row: 12, col: 3,  answer: 'MEI' },
-      { id: 20, num: 20, dir: 'down',   row: 12, col: 11, answer: 'KUKU' },
-      { id: 21, num: 21, dir: 'across', row: 13, col: 0,  answer: 'INFEKSI' },
-      { id: 22, num: 22, dir: 'across', row: 13, col: 8,  answer: 'PNEUMONIA' },
-      { id: 23, num: 23, dir: 'across', row: 15, col: 5,  answer: 'HAIS' },
-      { id: 24, num: 24, dir: 'across', row: 15, col: 16, answer: 'HAIS' },
-      { id: 25, num: 25, dir: 'across', row: 16, col: 12, answer: 'HEPA' },
-      { id: 26, num: 26, dir: 'across', row: 17, col: 2,  answer: 'TRANSMISI' }
-    ];
-
-    const ROWS = 18;
-    const COLS = 20;
-    let gridData            = [];
-    let currentDirection    = 'across';
-    let activeWordId        = null;
-    let isProgrammaticFocus = false;
-
-    /* === KUNCI SEMUA INPUT & TOMBOL CEK === */
-    function lockGrid() {
-      document.querySelectorAll('.cell input').forEach(input => {
-        input.disabled = true;
-      });
-      const btnCek = document.getElementById('btnCek');
-      if (btnCek) {
-        btnCek.disabled = true;
-        btnCek.title    = 'Jawaban sudah dikunci. Tekan Ulangi untuk mengerjakan ulang.';
-      }
-      document.getElementById('lockedBanner').style.display = 'block';
-    }
-
-    /* === GENERATE GRID === */
-    window.createGrid = function () {
-      for (let r = 0; r < ROWS; r++) {
-        let row = [];
-        for (let c = 0; c < COLS; c++) row.push({ empty: true });
-        gridData.push(row);
-      }
-
-      wordsConfig.forEach(w => {
-        let r = w.row, c = w.col;
-        if (gridData[r][c].empty) {
-          gridData[r][c] = { empty: false, num: w.num, words: {} };
-        } else {
-          gridData[r][c].num = w.num;
-        }
-        for (let i = 0; i < w.answer.length; i++) {
-          let currR = w.dir === 'across' ? r     : r + i;
-          let currC = w.dir === 'across' ? c + i : c;
-          if (gridData[currR][currC].empty) {
-            gridData[currR][currC] = { empty: false, words: {} };
-          }
-          gridData[currR][currC].words[w.dir] = w.id;
-        }
-      });
-
-      const container = document.getElementById('crossword');
-      container.innerHTML = '';
-
-      for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLS; c++) {
-          const cell = gridData[r][c];
-          const div  = document.createElement('div');
-
-          if (cell.empty) {
-            div.className = 'black';
-          } else {
-            div.className   = 'cell';
-            div.dataset.r   = r;
-            div.dataset.c   = c;
-
-            if (cell.num) {
-              const span       = document.createElement('span');
-              span.className   = 'num';
-              span.textContent = cell.num;
-              div.appendChild(span);
-            }
-
-            const input          = document.createElement('input');
-            input.maxLength      = 1;
-            input.dataset.r      = r;
-            input.dataset.c      = c;
-            input.dataset.across = cell.words['across'] || '';
-            input.dataset.down   = cell.words['down']   || '';
-
-            input.addEventListener('focus',   () => handleFocus(input));
-            input.addEventListener('input',   (e) => handleInput(e, input));
-            input.addEventListener('keydown', (e) => handleKeyDown(e, input));
-
-            div.appendChild(input);
-          }
-          container.appendChild(div);
-        }
-      }
-    };
-
-    /* ============================================================
-       NAVIGASI KURSOR
-    ============================================================ */
-    function handleFocus(input) {
-      const acrossId = input.dataset.across;
-      const downId   = input.dataset.down;
-
-      if (isProgrammaticFocus) {
-        isProgrammaticFocus = false;
-        const validId = currentDirection === 'across' ? acrossId : downId;
-        if (validId) {
-          activeWordId = validId;
-        } else {
-          currentDirection = currentDirection === 'across' ? 'down' : 'across';
-          activeWordId     = currentDirection === 'across' ? acrossId : downId;
-        }
-        highlightActiveWord();
-        return;
-      }
-
-      if (acrossId && downId) {
-        if      (activeWordId == acrossId) currentDirection = 'down';
-        else if (activeWordId == downId)   currentDirection = 'across';
-        else currentDirection = currentDirection === 'across' ? 'across' : 'down';
+      if (cell.empty) {
+        div.className = 'black';
       } else {
-        currentDirection = acrossId ? 'across' : 'down';
-      }
+        div.className = 'cell';
+        div.dataset.r = r;
+        div.dataset.c = c;
 
-      activeWordId = currentDirection === 'across' ? acrossId : downId;
+        if (cell.num) {
+          const span = document.createElement('span');
+          span.className   = 'num';
+          span.textContent = cell.num;
+          span.style.fontSize = Math.max(7, cellSize * 0.22) + 'px';
+          div.appendChild(span);
+        }
+
+        const input = document.createElement('input');
+        input.maxLength      = 1;
+        input.dataset.r      = r;
+        input.dataset.c      = c;
+        input.dataset.across = cell.words?.['across'] || '';
+        input.dataset.down   = cell.words?.['down']   || '';
+        input.style.fontSize = Math.max(11, cellSize * 0.38) + 'px';
+
+        input.addEventListener('focus',      () => handleFocus(input));
+        input.addEventListener('input',      (e) => handleInput(e, input));
+        input.addEventListener('keydown',    (e) => handleKeyDown(e, input));
+        // Mobile: touchstart → focus
+        input.addEventListener('touchstart', (e) => { e.preventDefault(); input.focus(); }, { passive: false });
+
+        div.appendChild(input);
+      }
+      container.appendChild(div);
+    }
+  }
+
+  buildClueList();
+};
+
+/* ── Cursor navigation ── */
+function handleFocus(input) {
+  const acrossId = input.dataset.across;
+  const downId   = input.dataset.down;
+
+  if (isProgrammaticFocus) {
+    isProgrammaticFocus = false;
+    const validId = currentDirection === 'across' ? acrossId : downId;
+    if (validId) { activeWordId = validId; }
+    else {
+      currentDirection = currentDirection === 'across' ? 'down' : 'across';
+      activeWordId     = currentDirection === 'across' ? acrossId : downId;
+    }
+    highlightActiveWord();
+    showClue(acrossId || null, downId || null);
+    return;
+  }
+
+  if (acrossId && downId) {
+    if      (activeWordId == acrossId) currentDirection = 'down';
+    else if (activeWordId == downId)   currentDirection = 'across';
+    else currentDirection = currentDirection === 'across' ? 'across' : 'down';
+  } else {
+    currentDirection = acrossId ? 'across' : 'down';
+  }
+
+  activeWordId = currentDirection === 'across' ? acrossId : downId;
+  highlightActiveWord();
+  showClue(acrossId || null, downId || null);
+}
+
+function handleInput(e, input) {
+  input.value = input.value.toUpperCase();
+  if (input.value) moveNext(input, 1);
+}
+
+function handleKeyDown(e, input) {
+  if (e.key === 'Backspace' && !input.value) {
+    moveNext(input, -1);
+  } else if (e.key === 'Tab') {
+    e.preventDefault();
+    const a = input.dataset.across, d = input.dataset.down;
+    if (a && d) {
+      currentDirection = currentDirection === 'across' ? 'down' : 'across';
+      activeWordId     = currentDirection === 'across' ? a : d;
       highlightActiveWord();
     }
+  } else if (e.key === 'ArrowRight') moveFocus(input,  0,  1, 'across');
+    else if (e.key === 'ArrowLeft')  moveFocus(input,  0, -1, 'across');
+    else if (e.key === 'ArrowDown')  moveFocus(input,  1,  0, 'down');
+    else if (e.key === 'ArrowUp')    moveFocus(input, -1,  0, 'down');
+}
 
-    function handleInput(e, input) {
-      input.value = input.value.toUpperCase();
-      startTimer();
-      if (input.value) moveNext(input, 1);
+function moveNext(input, step) {
+  let r = +input.dataset.r, c = +input.dataset.c;
+  if (currentDirection === 'across') c += step; else r += step;
+  const next = document.querySelector(`input[data-r="${r}"][data-c="${c}"]`);
+  if (next && next.dataset[currentDirection] == activeWordId) {
+    isProgrammaticFocus = true; next.focus();
+  }
+}
+
+function moveFocus(input, ro, co, newDir) {
+  const r = +input.dataset.r + ro, c = +input.dataset.c + co;
+  const next = document.querySelector(`input[data-r="${r}"][data-c="${c}"]`);
+  if (next) { if (newDir) currentDirection = newDir; isProgrammaticFocus = true; next.focus(); }
+}
+
+function highlightActiveWord() {
+  document.querySelectorAll('.cell').forEach(c => c.classList.remove('active-word'));
+  if (!activeWordId) return;
+  document.querySelectorAll(`input[data-${currentDirection}="${activeWordId}"]`)
+    .forEach(inp => inp.parentElement.classList.add('active-word'));
+}
+
+document.addEventListener('mousedown', (e) => {
+  const grid  = document.getElementById('crossword');
+  const panel = document.querySelector('.clue-panel');
+  if (!grid.contains(e.target) && (!panel || !panel.contains(e.target))) {
+    activeWordId = null;
+    document.querySelectorAll('.cell').forEach(c => c.classList.remove('active-word'));
+    hideClue();
+  }
+});
+
+/* ================================================================
+   CHECK ANSWERS
+================================================================ */
+window.checkAnswers = function () {
+  if (hasChecked) return;
+
+  const name = document.getElementById('participantName').value.trim();
+  const unit = document.getElementById('participantUnit').value.trim();
+
+  if (!name) {
+    alert('Mohon isi nama peserta terlebih dahulu.');
+    document.getElementById('participantName').focus();
+    return;
+  }
+
+  hasChecked = true;
+  stopTimer();
+
+  document.querySelectorAll('.cell').forEach(c => c.classList.remove('correct', 'wrong'));
+
+  let correct = 0;
+  const total = wordsConfig.length;
+
+  wordsConfig.forEach(w => {
+    let ok = true, cells = [];
+    for (let i = 0; i < w.answer.length; i++) {
+      const cr = w.dir === 'across' ? w.row     : w.row + i;
+      const cc = w.dir === 'across' ? w.col + i : w.col;
+      const inp = document.querySelector(`input[data-r="${cr}"][data-c="${cc}"]`);
+      cells.push(inp.parentElement);
+      if (!inp.value || inp.value.toUpperCase() !== w.answer[i]) ok = false;
     }
+    if (ok) { correct++; cells.forEach(c => c.classList.add('correct')); }
+    else    { cells.forEach(c => { if (!c.classList.contains('correct')) c.classList.add('wrong'); }); }
+  });
 
-    function handleKeyDown(e, input) {
-      if (e.key === 'Backspace' && !input.value) {
-        moveNext(input, -1);
-      } else if (e.key === 'Tab') {
-        e.preventDefault();
-        const acrossId = input.dataset.across;
-        const downId   = input.dataset.down;
-        if (acrossId && downId) {
-          currentDirection = currentDirection === 'across' ? 'down' : 'across';
-          activeWordId     = currentDirection === 'across' ? acrossId : downId;
-          highlightActiveWord();
-        }
-      } else if (e.key === 'ArrowRight') moveFocus(input,  0,  1, 'across');
-      else if   (e.key === 'ArrowLeft')  moveFocus(input,  0, -1, 'across');
-      else if   (e.key === 'ArrowDown')  moveFocus(input,  1,  0, 'down');
-      else if   (e.key === 'ArrowUp')    moveFocus(input, -1,  0, 'down');
+  document.querySelectorAll('.cell.correct').forEach(c => c.classList.remove('wrong'));
+  lockGrid();
+
+  const pct     = Math.round((correct / total) * 100);
+  const timeStr = formatTime(elapsedSeconds);
+  const result  = document.getElementById('result');
+  result.textContent = `Nilai ${name}: ${correct} dari ${total} Kata Benar (${pct}%) — Waktu: ${timeStr}`;
+  result.style.color = correct === total ? '#047857' : '#b45309';
+
+  const now  = new Date().toLocaleString('id-ID');
+  const sc   = document.getElementById('scoreCard');
+  sc.style.display = 'block';
+  sc.innerHTML = `
+    <strong>Hasil Nilai Peserta</strong><br>
+    Nama Peserta: ${name}<br>
+    Unit/Ruangan: ${unit || '-'}<br>
+    Waktu: ${now}<br>
+    Skor Benar: ${correct} dari ${total} Pertanyaan<br>
+    Persentase: ${pct}%<br>
+    Waktu Pengerjaan: ${timeStr}
+  `;
+
+  window.saveToLeaderboard(name, unit, correct, pct, total, elapsedSeconds);
+};
+
+/* ================================================================
+   FIREBASE SAVE
+================================================================ */
+window.saveToLeaderboard = function (name, unit, correct, pct, total, secs) {
+  const now     = new Date().toLocaleString('id-ID');
+  const payload = { name, unit, correct, total, percentage: pct, timeSeconds: secs, timestamp: now };
+  push(ref(db, 'submissions'), payload).catch(e => console.error(e));
+  const uid = (name + '_' + (unit || '')).replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+  runTransaction(ref(db, 'leaderboard/' + uid), (cur) => {
+    if (!cur) return { name, unit, correct, percentage: pct, timeSeconds: secs, timestamp: now };
+    if (correct > cur.correct || (correct === cur.correct && secs < (cur.timeSeconds ?? Infinity)))
+      return { name, unit, correct, percentage: pct, timeSeconds: secs, timestamp: now };
+    return cur;
+  }).catch(e => console.error(e));
+};
+
+/* ================================================================
+   UTILITIES
+================================================================ */
+window.resetGrid = function () {
+  hasChecked = false;
+  document.querySelectorAll('.cell input').forEach(inp => { inp.value = ''; inp.disabled = false; });
+  document.querySelectorAll('.cell').forEach(c => c.classList.remove('correct', 'wrong', 'active-word'));
+  document.getElementById('result').textContent = '';
+  const sc = document.getElementById('scoreCard'); sc.style.display = 'none'; sc.innerHTML = '';
+  const btn = document.getElementById('btnCek'); btn.disabled = false; btn.title = '';
+  document.getElementById('lockedBanner').style.display = 'none';
+  activeWordId = null; hideClue(); resetTimer();
+};
+
+window.showAnswers = function () {
+  if (!window.isHost) return alert('Hanya host yang dapat menampilkan jawaban.');
+  wordsConfig.forEach(w => {
+    for (let i = 0; i < w.answer.length; i++) {
+      const cr  = w.dir === 'across' ? w.row     : w.row + i;
+      const cc  = w.dir === 'across' ? w.col + i : w.col;
+      const inp = document.querySelector(`input[data-r="${cr}"][data-c="${cc}"]`);
+      inp.disabled = false; inp.value = w.answer[i]; inp.disabled = true;
+      inp.parentElement.classList.remove('wrong'); inp.parentElement.classList.add('correct');
     }
+  });
+  document.getElementById('result').textContent = 'Semua jawaban telah ditampilkan.';
+  document.getElementById('result').style.color = '#047857';
+};
 
-    function moveNext(input, step) {
-      let r = parseInt(input.dataset.r);
-      let c = parseInt(input.dataset.c);
-      if (currentDirection === 'across') c += step;
-      else r += step;
-      const nextInput = document.querySelector(`input[data-r="${r}"][data-c="${c}"]`);
-      if (nextInput && nextInput.dataset[currentDirection] == activeWordId) {
-        isProgrammaticFocus = true;
-        nextInput.focus();
-      }
-    }
+window.toggleKey = function () {
+  if (!window.isHost) return alert('Kunci jawaban hanya dapat dilihat oleh host.');
+  const k = document.getElementById('answerKey');
+  k.style.display = k.style.display === 'block' ? 'none' : 'block';
+};
 
-    function moveFocus(input, rOffset, cOffset, newDir) {
-      let r = parseInt(input.dataset.r) + rOffset;
-      let c = parseInt(input.dataset.c) + cOffset;
-      const nextInput = document.querySelector(`input[data-r="${r}"][data-c="${c}"]`);
-      if (nextInput) {
-        if (newDir) currentDirection = newDir;
-        isProgrammaticFocus = true;
-        nextInput.focus();
-      }
-    }
+window.clearLeaderboard = function () {
+  if (confirm('Hapus semua data dari database?')) {
+    Promise.all([remove(ref(db, 'submissions')), remove(ref(db, 'leaderboard'))])
+      .then(() => alert('Data berhasil dikosongkan.'))
+      .catch(e => alert('Gagal: ' + e.message));
+  }
+};
 
-    function highlightActiveWord() {
-      document.querySelectorAll('.cell').forEach(c => c.classList.remove('active-word'));
-      if (!activeWordId) return;
-      document.querySelectorAll(`input[data-${currentDirection}="${activeWordId}"]`).forEach(inp => {
-        inp.parentElement.classList.add('active-word');
-      });
-    }
 
-    /* ============================================================
-       SISTEM PENILAIAN
-    ============================================================ */
-    window.checkAnswers = function () {
-      if (hasChecked) return;
+/* ── Init ── */
+window.createGrid();
 
-      const name = document.getElementById('participantName').value.trim();
-      const unit = document.getElementById('participantUnit').value.trim();
-
-      if (!name) {
-        alert('Mohon isi nama peserta terlebih dahulu.');
-        document.getElementById('participantName').focus();
-        return;
-      }
-
-      hasChecked = true;
-      stopTimer();
-
-      let correctWordsCount = 0;
-      const totalWords      = wordsConfig.length;
-
-      document.querySelectorAll('.cell').forEach(cell => cell.classList.remove('correct', 'wrong'));
-
-      wordsConfig.forEach(w => {
-        let isCorrect    = true;
-        let inputsInWord = [];
-
-        for (let i = 0; i < w.answer.length; i++) {
-          let currR = w.dir === 'across' ? w.row     : w.row + i;
-          let currC = w.dir === 'across' ? w.col + i : w.col;
-          const input = document.querySelector(`input[data-r="${currR}"][data-c="${currC}"]`);
-          inputsInWord.push(input.parentElement);
-          if (!input.value || input.value.toUpperCase() !== w.answer[i]) isCorrect = false;
-        }
-
-        if (isCorrect) {
-          correctWordsCount++;
-          inputsInWord.forEach(cell => cell.classList.add('correct'));
-        } else {
-          inputsInWord.forEach(cell => {
-            if (!cell.classList.contains('correct')) cell.classList.add('wrong');
-          });
-        }
-      });
-
-      document.querySelectorAll('.cell.correct').forEach(cell => cell.classList.remove('wrong'));
-
-      lockGrid();
-
-      const percentage = Math.round((correctWordsCount / totalWords) * 100);
-      const timeStr    = formatTime(elapsedSeconds);
-      const result     = document.getElementById('result');
-
-      result.textContent = `Nilai ${name}: ${correctWordsCount} dari ${totalWords} Kata Benar (${percentage}%) — Waktu: ${timeStr}`;
-      result.style.color = correctWordsCount === totalWords ? '#047857' : '#b45309';
-
-      const now       = new Date().toLocaleString('id-ID');
-      const scoreText = `Nama Peserta: ${name}\nUnit/Ruangan: ${unit || '-'}\nWaktu: ${now}\nSkor Benar: ${correctWordsCount} Kata\nTotal Pertanyaan: ${totalWords} Kata\nPersentase: ${percentage}%\nWaktu Pengerjaan: ${timeStr}`;
-
-      const scoreCard = document.getElementById('scoreCard');
-      scoreCard.style.display = 'block';
-      scoreCard.dataset.score  = scoreText;
-      scoreCard.innerHTML = `
-        <strong>Hasil Nilai Peserta</strong><br>
-        Nama Peserta: ${name}<br>
-        Unit/Ruangan: ${unit || '-'}<br>
-        Waktu: ${now}<br>
-        Skor Benar: ${correctWordsCount} dari ${totalWords} Pertanyaan<br>
-        Persentase: ${percentage}%<br>
-        Waktu Pengerjaan: ${timeStr}
-      `;
-
-      // Simpan ke Firebase — data leaderboard tetap tersimpan di backend
-      window.saveToLeaderboard(name, unit, correctWordsCount, percentage, totalWords, elapsedSeconds);
-    };
-
-    /* ============================================================
-       FIREBASE — simpan ke leaderboard (tanpa tampilan di web)
-    ============================================================ */
-    window.saveToLeaderboard = function (name, unit, correct, percentage, total, timeSeconds) {
-      const now     = new Date().toLocaleString('id-ID');
-      const payload = { name, unit, correct, total, percentage, timeSeconds, timestamp: now };
-
-      push(ref(db, 'submissions'), payload)
-        .catch(err => console.error('submissions write error:', err));
-
-      const userId = (name + '_' + (unit || '')).replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
-      runTransaction(ref(db, 'leaderboard/' + userId), (current) => {
-        if (current === null) {
-          return { name, unit, correct, percentage, timeSeconds, timestamp: now };
-        }
-        const isBetter = correct > current.correct;
-        const isFaster = correct === current.correct &&
-                         timeSeconds < (current.timeSeconds ?? Infinity);
-        return (isBetter || isFaster)
-          ? { name, unit, correct, percentage, timeSeconds, timestamp: now }
-          : current;
-      }).catch(err => console.error('leaderboard transaction error:', err));
-    };
-
-    window.clearLeaderboard = function () {
-      if (confirm('Apakah Anda yakin ingin menghapus semua data dari database?')) {
-        Promise.all([
-          remove(ref(db, 'submissions')),
-          remove(ref(db, 'leaderboard'))
-        ]).then(() => alert('Semua data berhasil dikosongkan.'))
-          .catch(err => alert('Gagal reset: ' + err.message));
-      }
-    };
-
-    /* ============================================================
-       TOMBOL UTILITAS
-    ============================================================ */
-    window.resetGrid = function () {
-      hasChecked = false;
-
-      document.querySelectorAll('.cell input').forEach(input => {
-        input.value    = '';
-        input.disabled = false;
-      });
-      document.querySelectorAll('.cell').forEach(cell =>
-        cell.classList.remove('correct', 'wrong', 'active-word')
-      );
-
-      document.getElementById('result').textContent = '';
-
-      const scoreCard          = document.getElementById('scoreCard');
-      scoreCard.style.display  = 'none';
-      scoreCard.dataset.score  = '';
-      scoreCard.innerHTML      = '';
-
-      const btnCek     = document.getElementById('btnCek');
-      btnCek.disabled  = false;
-      btnCek.title     = '';
-
-      document.getElementById('lockedBanner').style.display = 'none';
-
-      activeWordId = null;
-      resetTimer();
-    };
-
-    window.copyScore = function () {
-      const scoreText = document.getElementById('scoreCard').dataset.score;
-      if (!scoreText) return alert('Klik Cek Jawaban terlebih dahulu sebelum menyalin nilai.');
-      navigator.clipboard.writeText(scoreText).then(() => {
-        alert('Nilai peserta berhasil disalin. Silakan paste dan kirim ke host.');
-      });
-    };
-
-    window.showAnswers = function () {
-      if (!window.isHost) return alert('Hanya host yang dapat menampilkan jawaban.');
-      wordsConfig.forEach(w => {
-        for (let i = 0; i < w.answer.length; i++) {
-          let currR = w.dir === 'across' ? w.row     : w.row + i;
-          let currC = w.dir === 'across' ? w.col + i : w.col;
-          const input = document.querySelector(`input[data-r="${currR}"][data-c="${currC}"]`);
-          input.disabled = false;
-          input.value    = w.answer[i];
-          input.disabled = true;
-          input.parentElement.classList.remove('wrong');
-          input.parentElement.classList.add('correct');
-        }
-      });
-      document.getElementById('result').textContent = 'Semua jawaban telah ditampilkan.';
-      document.getElementById('result').style.color = '#047857';
-    };
-
-    window.toggleKey = function () {
-      if (!window.isHost) return alert('Kunci jawaban hanya dapat dilihat oleh host.');
-      const key          = document.getElementById('answerKey');
-      key.style.display  = key.style.display === 'block' ? 'none' : 'block';
-    };
-
-    window.hostLogin = function () {
-      if (prompt('Masukkan password host:') === HOST_PASSWORD) {
-        window.isHost = true;
-        document.querySelectorAll('.host-only').forEach(btn => btn.style.display = 'inline-block');
-        document.getElementById('hostLoginBtn').style.display = 'none';
-      } else {
-        alert('Password salah.');
-      }
-    };
-
+/* ── Rerender on resize for responsiveness ── */
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    // Only re-calc cell size; rebuild preserving values
+    const inputs = {};
+    document.querySelectorAll('.cell input').forEach(inp => {
+      inputs[`${inp.dataset.r},${inp.dataset.c}`] = inp.value;
+    });
     window.createGrid();
-  </script>
+    Object.entries(inputs).forEach(([key, val]) => {
+      const inp = document.querySelector(`input[data-r="${key.split(',')[0]}"][data-c="${key.split(',')[1]}"]`);
+      if (inp) inp.value = val;
+    });
+  }, 200);
+});
+</script>
 </body>
 </html>
