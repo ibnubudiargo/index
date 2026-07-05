@@ -1,1114 +1,424 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>TTS PPI – Clean Hands Save Lives</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --navy:   #003c71;
-      --navy2:  #00284d;
-      --orange: #f37021;
-      --orange2:#d65d18;
-      --green:  #10b981;
-      --red:    #ef4444;
-      --bg:     #f0f4f8;
-      --white:  #ffffff;
-      --border: #dde3ea;
-      --text:   #1a2332;
-      --muted:  #6b7a8d;
-      --cell-size: 34px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ibnu Budiargo — IT Support Specialist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F5FAF9;
+    --surface: #FFFFFF;
+    --ink: #0F2A2E;
+    --ink-soft: #4C6B6E;
+    --teal: #0E9488;
+    --teal-deep: #0A6E65;
+    --amber: #E2A63B;
+    --line: #D8E6E4;
+    --mono: 'IBM Plex Mono', monospace;
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'IBM Plex Sans', sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--body);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  .wrap{max-width:920px; margin:0 auto; padding:0 28px;}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+  /* ---- top status bar ---- */
+  .statusbar{
+    border-bottom:1px solid var(--line);
+    background:var(--surface);
+    position:sticky; top:0; z-index:10;
+  }
+  .statusbar .wrap{
+    display:flex; align-items:center; justify-content:space-between;
+    padding-top:14px; padding-bottom:14px;
+    font-family:var(--mono); font-size:12.5px; color:var(--ink-soft);
+    letter-spacing:.03em;
+  }
+  .dot{
+    display:inline-block; width:8px; height:8px; border-radius:50%;
+    background:var(--teal); margin-right:8px;
+    animation:pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:1; box-shadow:0 0 0 0 rgba(14,148,136,.35);}
+    50%{opacity:.6; box-shadow:0 0 0 6px rgba(14,148,136,0);}
+  }
+  .statusbar nav a{text-decoration:none; margin-left:22px; color:var(--ink-soft); transition:color .15s;}
+  .statusbar nav a:hover{color:var(--teal-deep);}
 
-    body {
-      font-family: 'Nunito', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
+  /* ---- hero ---- */
+  .hero{padding:72px 0 40px;}
+  .eyebrow{
+    font-family:var(--mono); font-size:12.5px; color:var(--teal-deep);
+    letter-spacing:.12em; text-transform:uppercase; margin-bottom:18px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{content:''; width:22px; height:1px; background:var(--teal-deep); display:inline-block;}
+  h1{
+    font-family:var(--display); font-weight:700;
+    font-size:clamp(38px,6vw,64px); line-height:1.03; letter-spacing:-.01em;
+    color:var(--ink); max-width:12ch;
+  }
+  .role{
+    font-family:var(--display); font-weight:500; font-size:clamp(18px,2.4vw,22px);
+    color:var(--teal-deep); margin-top:14px;
+  }
+  .lede{max-width:52ch; margin-top:18px; color:var(--ink-soft); font-size:16px;}
 
-    /* ── Header ── */
-    .header {
-      background: linear-gradient(135deg, var(--navy) 0%, #005aad 100%);
-      color: #fff;
-      padding: 18px 20px 16px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .header::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Ccircle fill='rgba(255,255,255,0.04)' cx='20' cy='20' r='18'/%3E%3C/g%3E%3C/svg%3E") repeat;
-      pointer-events: none;
-    }
-    .header h1 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(16px, 4vw, 22px);
-      font-weight: 700;
-      letter-spacing: -0.3px;
-      margin-bottom: 4px;
-      position: relative;
-    }
-    .header p {
-      font-size: 12px;
-      opacity: 0.8;
-      position: relative;
-    }
-    .seed-badge {
-      display: inline-block;
-      background: rgba(255,255,255,0.18);
-      border: 1px solid rgba(255,255,255,0.3);
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      margin-top: 6px;
-      position: relative;
-      letter-spacing: 0.5px;
-    }
+  .vitals{
+    margin-top:44px;
+    display:grid; grid-template-columns:repeat(3,1fr);
+    border:1px solid var(--line); border-radius:10px; overflow:hidden;
+    background:var(--surface);
+  }
+  .vital{padding:20px 22px; border-right:1px solid var(--line);}
+  .vital:last-child{border-right:none;}
+  .vital .label{font-family:var(--mono); font-size:11px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.08em;}
+  .vital .value{font-family:var(--display); font-weight:600; font-size:26px; margin-top:6px; color:var(--ink);}
+  .vital .value.ok{color:var(--teal-deep);}
 
-    /* ── Container ── */
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 16px;
-    }
+  /* EKG waveform */
+  .waveform{margin-top:36px; width:100%; height:64px;}
+  .waveform path{
+    fill:none; stroke:var(--teal); stroke-width:2;
+    stroke-dasharray:900; stroke-dashoffset:900;
+    animation:draw 3.2s ease-in-out infinite;
+  }
+  @keyframes draw{
+    0%{stroke-dashoffset:900;}
+    60%{stroke-dashoffset:0;}
+    100%{stroke-dashoffset:-900;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .waveform path, .dot{animation:none;}
+  }
 
-    /* ── Card ── */
-    .card {
-      background: var(--white);
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-      padding: 18px;
-      margin-bottom: 14px;
-    }
-    .card-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--navy);
-      border-bottom: 2px solid var(--orange);
-      padding-bottom: 8px;
-      margin-bottom: 14px;
-      display: inline-block;
-      letter-spacing: 0.2px;
-    }
+  /* ---- section shell ---- */
+  section{padding:64px 0;}
+  .section-head{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:34px; gap:16px;}
+  .section-head h2{
+    font-family:var(--display); font-weight:600; font-size:26px; color:var(--ink);
+  }
+  .section-head .tag{font-family:var(--mono); font-size:12px; color:var(--ink-soft); white-space:nowrap;}
+  .divider{
+    height:1px; background:var(--line); border:none; margin:0;
+  }
+  .rule-waveform{width:100%; height:20px; opacity:.5;}
+  .rule-waveform path{fill:none; stroke:var(--line); stroke-width:1.5;}
 
-    /* ── Form ── */
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    @media (max-width: 500px) {
-      .form-row { grid-template-columns: 1fr; }
-    }
-    .form-group label {
-      display: block;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--navy);
-      margin-bottom: 5px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .form-group input {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-size: 14px;
-      font-family: 'Nunito', sans-serif;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      color: var(--text);
-    }
-    .form-group input:focus {
-      outline: none;
-      border-color: var(--orange);
-      box-shadow: 0 0 0 3px rgba(243,112,33,0.12);
-    }
+  /* ---- about ---- */
+  .about-grid{display:grid; grid-template-columns:1.3fr .7fr; gap:40px;}
+  .about-grid p{color:var(--ink-soft); font-size:15.5px;}
+  .about-grid p + p{margin-top:14px;}
+  .about-side{
+    border-left:2px solid var(--teal); padding-left:18px;
+  }
+  .about-side .k{font-family:var(--mono); font-size:11px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.08em; margin-top:16px;}
+  .about-side .k:first-child{margin-top:0;}
+  .about-side .v{font-family:var(--body); font-weight:600; font-size:15px; margin-top:3px;}
 
-    /* ── Timer ── */
-    #timerDisplay {
-      text-align: center;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--navy);
-      background: linear-gradient(135deg, #e8f0fa, #dde8f5);
-      border-radius: 8px;
-      padding: 8px 14px;
-      margin-bottom: 12px;
-      letter-spacing: 0.5px;
-    }
+  @media (max-width:720px){
+    .about-grid{grid-template-columns:1fr;}
+    .vitals{grid-template-columns:1fr;}
+    .vital{border-right:none; border-bottom:1px solid var(--line);}
+    .vital:last-child{border-bottom:none;}
+  }
 
-    /* ── Alert / Banner ── */
-    .locked-banner {
-      display: none;
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      color: #856404;
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: 13px;
-      font-weight: 700;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    .warning-note {
-      background: #fff5f5;
-      border-left: 3px solid var(--red);
-      color: #9b1c1c;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      margin-top: 10px;
-      text-align: center;
-    }
+  /* ---- ticket log (experience) ---- */
+  .ticket{
+    background:var(--surface); border:1px solid var(--line); border-radius:10px;
+    padding:22px 24px; margin-bottom:16px; position:relative;
+  }
+  .ticket-head{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+  .ticket-id{font-family:var(--mono); font-size:12px; color:var(--ink-soft);}
+  .ticket-status{
+    font-family:var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+    padding:3px 9px; border-radius:20px; border:1px solid var(--line);
+  }
+  .ticket-status.active{color:var(--teal-deep); border-color:var(--teal); background:rgba(14,148,136,.08);}
+  .ticket-status.resolved{color:var(--ink-soft);}
+  .ticket h3{font-family:var(--display); font-weight:600; font-size:19px; margin-top:10px;}
+  .ticket .org{font-size:14.5px; color:var(--ink-soft); margin-top:2px;}
+  .ticket .meta{font-family:var(--mono); font-size:12px; color:var(--ink-soft); margin-top:8px;}
+  .ticket .desc{margin-top:12px; font-size:14.5px; color:var(--ink-soft);}
+  .ticket .desc ul{margin-left:18px; margin-top:6px;}
+  .ticket .badge{
+    display:inline-block; margin-top:12px; font-family:var(--mono); font-size:11px;
+    color:var(--teal-deep); border:1px solid var(--teal); border-radius:6px; padding:3px 8px;
+  }
 
-    /* ── Layout: grid + clue ── */
-    .play-area {
-      display: grid;
-      grid-template-columns: 1fr 340px;
-      gap: 16px;
-      align-items: start;
-    }
-    @media (max-width: 860px) {
-      .play-area { grid-template-columns: 1fr; }
-    }
+  /* ---- skills / modules ---- */
+  .modules{display:grid; grid-template-columns:repeat(2,1fr); gap:18px;}
+  .module{background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:20px 22px;}
+  .module .mod-title{font-family:var(--mono); font-size:12px; color:var(--teal-deep); text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px;}
+  .tags{display:flex; flex-wrap:wrap; gap:8px;}
+  .tags span{
+    font-size:13px; padding:6px 11px; border-radius:6px; background:var(--bg);
+    border:1px solid var(--line); color:var(--ink);
+  }
+  @media (max-width:720px){ .modules{grid-template-columns:1fr;} }
 
-    /* ── Crossword Grid ── */
-    .grid-wrap {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: 8px;
-    }
-    .grid {
-      display: grid;
-      gap: 3px;
-      justify-content: start;
-    }
+  /* ---- certifications ---- */
+  .certs{display:grid; grid-template-columns:repeat(2,1fr); gap:16px;}
+  .cert{
+    display:flex; align-items:center; gap:14px;
+    background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:16px 18px;
+  }
+  .cert .icon{
+    width:36px; height:36px; border-radius:8px; background:rgba(14,148,136,.1);
+    display:flex; align-items:center; justify-content:center; color:var(--teal-deep); flex-shrink:0;
+    font-family:var(--mono); font-weight:600; font-size:13px;
+  }
+  .cert .name{font-weight:600; font-size:14.5px;}
+  .cert .from{font-size:12.5px; color:var(--ink-soft); margin-top:2px;}
+  @media (max-width:720px){ .certs{grid-template-columns:1fr;} }
 
-    .black { border-radius: 5px; background: var(--navy); }
-    .cell  { position: relative; border-radius: 5px; background: var(--white); }
+  /* ---- contact / open ticket ---- */
+  .contact-card{
+    background:var(--ink); color:var(--bg); border-radius:14px; padding:44px 40px;
+    position:relative; overflow:hidden;
+  }
+  .contact-card h2{font-family:var(--display); font-weight:600; font-size:28px; color:#fff;}
+  .contact-card p{color:#B7CBC9; margin-top:10px; max-width:44ch; font-size:15px;}
+  .contact-links{margin-top:26px; display:flex; flex-wrap:wrap; gap:12px;}
+  .contact-links a{
+    font-family:var(--mono); font-size:13px; text-decoration:none;
+    border:1px solid rgba(255,255,255,.25); padding:10px 16px; border-radius:8px;
+    color:#fff; transition:background .15s, border-color .15s;
+  }
+  .contact-links a:hover{background:rgba(255,255,255,.08); border-color:var(--teal);}
 
-    .cell input {
-      width: 100%;
-      height: 100%;
-      text-align: center;
-      font-size: 13px;
-      font-weight: 800;
-      font-family: 'Space Grotesk', sans-serif;
-      text-transform: uppercase;
-      border: 1.5px solid #b8c4d0;
-      border-radius: 5px;
-      background: transparent;
-      cursor: pointer;
-      padding: 0;
-      color: var(--text);
-      transition: border-color 0.15s, background 0.15s;
-      -webkit-tap-highlight-color: transparent;
-      /* Prevent zoom on iOS */
-      font-size: max(13px, 1em);
-    }
-    .cell input:focus {
-      border-color: var(--orange);
-      background: #fff8f3;
-      outline: none;
-    }
-    .cell input:disabled { cursor: not-allowed; opacity: 1; }
-
-    .cell.active-word input:not(:disabled) {
-      background: #fff3e8;
-      border-color: #f3a060;
-    }
-
-    .num {
-      position: absolute;
-      top: 2px;
-      left: 3px;
-      font-size: 8px;
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
-      color: var(--navy);
-      z-index: 2;
-      line-height: 1;
-      pointer-events: none;
-    }
-
-    .cell.correct input { background: #d1fae5 !important; border-color: #10b981 !important; color: #065f46 !important; }
-    .cell.wrong   input { background: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b !important; }
-
-    /* ── Clue Panel ── */
-    .clue-panel {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-      overflow: hidden;
-      position: sticky;
-      top: 16px;
-    }
-    @media (max-width: 860px) {
-      .clue-panel { position: static; }
-    }
-    .clue-panel-header {
-      background: var(--navy);
-      color: #fff;
-      padding: 12px 16px;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.3px;
-    }
-    .clue-panel-body {
-      padding: 16px;
-      min-height: 140px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .clue-empty {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      color: #b0bec9;
-      text-align: center;
-      padding: 16px 0;
-    }
-    .clue-empty-icon { font-size: 30px; opacity: 0.5; }
-    .clue-empty-text { font-size: 13px; line-height: 1.5; }
-    .clue-active { display: none; animation: fadeIn .2s ease; }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .clue-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      background: var(--orange);
-      color: #fff;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 20px;
-      margin-bottom: 10px;
-      letter-spacing: 0.3px;
-    }
-    .clue-number {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--navy);
-      line-height: 1;
-      margin-bottom: 2px;
-    }
-    .clue-direction {
-      font-size: 11px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      margin-bottom: 10px;
-    }
-    .clue-text {
-      font-size: 15px;
-      line-height: 1.6;
-      color: var(--text);
-      font-weight: 600;
-      border-left: 3px solid var(--orange);
-      padding-left: 12px;
-    }
-    .clue-divider {
-      border: none;
-      border-top: 1px dashed var(--border);
-      margin: 14px 0;
-    }
-    .clue-secondary { opacity: 0.7; }
-
-    /* ── All clues list (mobile accordion) ── */
-    .clue-list-toggle {
-      display: none;
-      width: 100%;
-      background: var(--navy);
-      color: #fff;
-      border: none;
-      padding: 11px 16px;
-      font-family: 'Nunito', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      border-radius: 10px;
-      cursor: pointer;
-      text-align: left;
-      margin-bottom: 8px;
-    }
-    @media (max-width: 860px) {
-      .clue-list-toggle { display: block; }
-    }
-    .clue-list-panel {
-      display: none;
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px 16px;
-      margin-bottom: 12px;
-      font-size: 13px;
-      line-height: 1.8;
-    }
-    .clue-list-panel.open { display: block; }
-    .clue-list-panel h4 {
-      font-family: 'Space Grotesk', sans-serif;
-      color: var(--navy);
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 6px;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 4px;
-    }
-    .clue-list-panel .item { padding: 3px 0; }
-    .clue-list-panel .item span { font-weight: 800; color: var(--orange); margin-right: 4px; }
-
-    /* ── Buttons ── */
-    .buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-      margin-top: 14px;
-    }
-    button.btn {
-      background: var(--orange);
-      color: #fff;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 8px;
-      font-family: 'Nunito', sans-serif;
-      font-size: 13px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      letter-spacing: 0.2px;
-      -webkit-tap-highlight-color: transparent;
-    }
-    button.btn:active { transform: scale(0.97); }
-    button.btn:hover { background: var(--orange2); }
-    button.btn:disabled { background: #aab; cursor: not-allowed; }
-    button.btn.secondary { background: var(--navy); }
-    button.btn.secondary:hover { background: var(--navy2); }
-    button.btn.host-only { display: none; }
-
-    /* ── Result & Score ── */
-    .result {
-      text-align: center;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      margin-top: 14px;
-      padding: 10px;
-      border-radius: 8px;
-    }
-    .score-card {
-      display: none;
-      margin-top: 12px;
-      padding: 14px;
-      background: #f0f7ff;
-      border-left: 4px solid var(--orange);
-      border-radius: 8px;
-      font-size: 13px;
-      line-height: 1.7;
-    }
-
-    /* ── Answer Key ── */
-    .answer-key {
-      display: none;
-      margin-top: 12px;
-      background: #fff8f3;
-      border: 1px solid #fbd8c7;
-      border-radius: 10px;
-      padding: 14px;
-      font-size: 12px;
-      line-height: 1.8;
-    }
-    .answer-key h3 { color: var(--orange); font-size: 13px; margin-bottom: 8px; }
-
-    /* ── Scrollbar styling ── */
-    .grid-wrap::-webkit-scrollbar { height: 4px; }
-    .grid-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-    /* ── Mobile: enlarge tap targets ── */
-    @media (max-width: 480px) {
-      :root { --cell-size: 30px; }
-      .card { padding: 14px; }
-      .container { padding: 10px; }
-    }
-    @media (max-width: 360px) {
-      :root { --cell-size: 26px; }
-    }
-  </style>
+  footer{padding:30px 0 50px; text-align:center; font-family:var(--mono); font-size:12px; color:var(--ink-soft);}
+</style>
 </head>
 <body>
 
-  <div class="header">
-    <h1>🧼 Clean Hands Save Lives – TTS PPI Edition</h1>
-    <p>Klik kotak untuk melihat pertanyaan. Isi sesuai alur mendatar / menurun.</p>
-    <div class="seed-badge" id="seedBadge">Kode Unik: —</div>
+<div class="statusbar">
+  <div class="wrap">
+    <div><span class="dot"></span>SYSTEM STATUS: OPERATIONAL</div>
+    <nav>
+      <a href="#about">About</a>
+      <a href="#log">Log</a>
+      <a href="#modules">Modules</a>
+      <a href="#certs">Certs</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</div>
+
+<div class="wrap hero">
+  <div class="eyebrow">Diagnostic Report / Personnel File</div>
+  <h1>Ibnu Budiargo</h1>
+  <div class="role">IT Support Specialist</div>
+  <p class="lede">Menjaga sistem tetap berjalan lancar — dari hardware, jaringan, hingga software — di lingkungan yang tidak punya ruang untuk downtime, seperti rumah sakit.</p>
+
+  <div class="vitals">
+    <div class="vital">
+      <div class="label">Current post</div>
+      <div class="value">Eka Hospital</div>
+    </div>
+    <div class="vital">
+      <div class="label">Years in field</div>
+      <div class="value">1+ year</div>
+    </div>
+    <div class="vital">
+      <div class="label">Status</div>
+      <div class="value ok">Active · Operational</div>
+    </div>
   </div>
 
-  <div class="container">
+  <svg class="waveform" viewBox="0 0 900 64" preserveAspectRatio="none">
+    <path d="M0,32 L180,32 L200,10 L220,54 L240,32 L320,32 L340,20 L360,44 L380,32 L900,32" />
+  </svg>
+</div>
 
-    <!-- Data Peserta -->
-    <div class="card">
-      <span class="card-title">📋 Data Peserta</span>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="participantName">Nama Peserta</label>
-          <input type="text" id="participantName" placeholder="Masukkan nama peserta" autocomplete="name" />
-        </div>
-        <div class="form-group">
-          <label for="participantUnit">Unit / Ruangan</label>
-          <input type="text" id="participantUnit" placeholder="Contoh: Rawat Inap / ICU" />
-        </div>
-      </div>
-      <div class="warning-note">⚠️ Jawaban hanya dapat dikirim satu kali. Pastikan seluruh jawaban sudah benar sebelum mengirim.</div>
-      <div class="score-card" id="scoreCard"></div>
+<section id="about">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>About</h2>
+      <span class="tag">// SUMMARY.LOG</span>
     </div>
-
-    <!-- Play Area -->
-    <div class="play-area">
-
-      <!-- Grid Side -->
+    <div class="about-grid">
       <div>
-        <div class="locked-banner" id="lockedBanner">🔒 Jawaban telah dikunci dan dikirim ke host.</div>
-        <div id="timerDisplay">⏱ Waktu: 0:00</div>
-
-        <div class="grid-wrap">
-          <div class="grid" id="crossword"></div>
-        </div>
-
-        <div class="buttons">
-          <button class="btn" id="btnCek" onclick="checkAnswers()">✅ Kirim Jawaban</button>
-          <button class="btn host-only secondary" onclick="clearLeaderboard()">🗑 Reset Data</button>
-        </div>
-
-        <div class="result" id="result"></div>
-        <div class="answer-key" id="answerKey"><h3>Kunci Jawaban Host</h3><div id="answerKeyBody"></div></div>
+        <p>IT Support Specialist dengan pengalaman menangani troubleshooting hardware, software, dan jaringan di lingkungan yang menuntut keandalan tinggi seperti rumah sakit. Saat ini bertugas di Eka Hospital, sebelumnya magang IT di EMC Healthcare dengan fokus pada diagnostik sistem dan pembaruan software.</p>
+        <p>Memiliki latar belakang tambahan sebagai Web Developer dan Data Analyst, membentuk kemampuan problem-solving yang fleksibel — mulai dari computer networking, system diagnostics, hingga pengelolaan data. Terbiasa beradaptasi dengan berbagai SOP, baik di sektor kesehatan, pemerintahan, maupun pendidikan.</p>
       </div>
-
-      <!-- Clue Panel (desktop) -->
-      <div class="clue-panel">
-        <div class="clue-panel-header">💡 Petunjuk Pertanyaan</div>
-        <div class="clue-panel-body" id="clueBody">
-          <div class="clue-empty" id="clueEmpty">
-            <div class="clue-empty-icon">👆</div>
-            <div class="clue-empty-text">Klik salah satu kotak<br>untuk melihat pertanyaan.</div>
-          </div>
-          <div class="clue-active" id="clueAcross">
-            <div class="clue-badge">↔ Mendatar</div>
-            <div class="clue-number" id="clueAcrossNum"></div>
-            <div class="clue-direction">Mendatar</div>
-            <div class="clue-text" id="clueAcrossText"></div>
-          </div>
-          <hr class="clue-divider" id="clueDivider" style="display:none">
-          <div class="clue-active clue-secondary" id="clueDown">
-            <div class="clue-badge">↕ Menurun</div>
-            <div class="clue-number" id="clueDownNum"></div>
-            <div class="clue-direction">Menurun</div>
-            <div class="clue-text" id="clueDownText"></div>
-          </div>
-        </div>
+      <div class="about-side">
+        <div class="k">Education</div>
+        <div class="v">Ilmu Komputer<br>Universitas Mercu Buana</div>
+        <div class="k">Based in</div>
+        <div class="v">South Jakarta, Indonesia</div>
+        <div class="k">Focus areas</div>
+        <div class="v">IT Support · Networking · Diagnostics</div>
       </div>
+    </div>
+  </div>
+</section>
 
+<hr class="divider">
+
+<section id="log">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Experience Log</h2>
+      <span class="tag">// TICKET_HISTORY</span>
     </div>
 
-  </div><!-- /container -->
+    <div class="ticket">
+      <div class="ticket-head">
+        <span class="ticket-id">TICKET #005</span>
+        <span class="ticket-status active">Active</span>
+      </div>
+      <h3>Information Technology Support Specialist</h3>
+      <div class="org">Eka Hospital · Full-time</div>
+      <div class="meta">Jun 2026 — Present · 2 mos · South Jakarta, Jakarta, Indonesia</div>
+    </div>
+
+    <div class="ticket">
+      <div class="ticket-head">
+        <span class="ticket-id">TICKET #004</span>
+        <span class="ticket-status resolved">Resolved</span>
+      </div>
+      <h3>Information Technology Intern</h3>
+      <div class="org">EMC Healthcare · Internship</div>
+      <div class="meta">Dec 2025 — Jun 2026 · 7 mos · Jakarta, Indonesia · On-site</div>
+      <div class="badge">✓ Magang Hub Certificate</div>
+    </div>
+
+    <div class="ticket">
+      <div class="ticket-head">
+        <span class="ticket-id">TICKET #003</span>
+        <span class="ticket-status resolved">Resolved</span>
+      </div>
+      <h3>Web Developer</h3>
+      <div class="org">Youtz Media Office · Internship</div>
+      <div class="meta">Feb 2024 — Aug 2024 · 7 mos · Indonesia · Remote</div>
+      <div class="badge">✓ Certificate of Completion</div>
+    </div>
+
+    <div class="ticket">
+      <div class="ticket-head">
+        <span class="ticket-id">TICKET #002</span>
+        <span class="ticket-status resolved">Resolved</span>
+      </div>
+      <h3>Data Analyst</h3>
+      <div class="org">Dinas Pendidikan Provinsi DKI Jakarta · Internship</div>
+      <div class="meta">Feb 2023 — Dec 2023 · 11 mos · Jakarta, Indonesia · Hybrid</div>
+      <div class="badge">✓ Pusdatindik</div>
+    </div>
+
+    <div class="ticket">
+      <div class="ticket-head">
+        <span class="ticket-id">TICKET #001</span>
+        <span class="ticket-status resolved">Resolved</span>
+      </div>
+      <h3>IT Support Specialist</h3>
+      <div class="org">Sekretariat Jenderal Dewan Perwakilan Daerah Republik Indonesia · Internship</div>
+      <div class="meta">Jan 2020 — Apr 2020 · 4 mos · Indonesia</div>
+      <div class="desc">Melakukan diagnostik sistem secara rutin dan menerapkan pembaruan software untuk mengoptimalkan performa komputer serta meningkatkan produktivitas secara keseluruhan.</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section id="modules">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Installed Modules</h2>
+      <span class="tag">// SKILLS.CONFIG</span>
+    </div>
+    <div class="modules">
+      <div class="module">
+        <div class="mod-title">Hardware &amp; OS</div>
+        <div class="tags">
+          <span>Hardware Troubleshooting</span>
+          <span>Windows</span>
+          <span>System Diagnostics</span>
+          <span>PC Maintenance</span>
+        </div>
+      </div>
+      <div class="module">
+        <div class="mod-title">Networking</div>
+        <div class="tags">
+          <span>Computer Networking</span>
+          <span>LAN / Wi-Fi Troubleshooting</span>
+          <span>Network Diagnostics</span>
+        </div>
+      </div>
+      <div class="module">
+        <div class="mod-title">Support &amp; Operations</div>
+        <div class="tags">
+          <span>Helpdesk Support</span>
+          <span>Software Updates &amp; Patching</span>
+          <span>User Support</span>
+        </div>
+      </div>
+      <div class="module">
+        <div class="mod-title">Web &amp; Data</div>
+        <div class="tags">
+          <span>Web Development</span>
+          <span>Data Analysis</span>
+          <span>Reporting</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section id="certs">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Certifications</h2>
+      <span class="tag">// VERIFIED_PATCHES</span>
+    </div>
+    <div class="certs">
+      <div class="cert">
+        <div class="icon">✓</div>
+        <div>
+          <div class="name">Magang Hub Certificate</div>
+          <div class="from">EMC Healthcare — IT Internship</div>
+        </div>
+      </div>
+      <div class="cert">
+        <div class="icon">✓</div>
+        <div>
+          <div class="name">Certificate of Completion</div>
+          <div class="from">Youtz Media Office — Web Developer</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section id="contact">
+  <div class="wrap">
+    <div class="contact-card">
+      <h2>Open a ticket</h2>
+      <p>Butuh dukungan IT yang teliti dan sigap? Hubungi saya melalui salah satu kanal di bawah — respon cepat dijamin.</p>
+      <div class="contact-links">
+        <a href="https://www.linkedin.com/in/ibnubudiargo/" target="_blank" rel="noopener">LinkedIn ↗</a>
+        <a href="mailto:ibnubudiargo123@gmail.com">ibnubudiargo123@gmail.com</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>© 2026 Ibnu Budiargo · Built with care, no downtime.</footer>
 
-<script type="module">
-import { initializeApp }       from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getDatabase, ref, push, remove, runTransaction }
-                                from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-
-/* ── Firebase ── */
-const firebaseConfig = {
-  apiKey:            "AIzaSyBkmmsivbqmQVT3jiv3X5RmNb1Jjh9BPMY",
-  authDomain:        "tekatekisialng.firebaseapp.com",
-  databaseURL:       "https://tekatekisialng-default-rtdb.firebaseio.com",
-  projectId:         "tekatekisialng",
-  storageBucket:     "tekatekisialng.firebasestorage.app",
-  messagingSenderId: "1017835792664",
-  appId:             "1:1017835792664:web:5acdbf600344ff8612d66d",
-};
-const app = initializeApp(firebaseConfig);
-const db  = getDatabase(app);
-
-const HOST_PASSWORD = 'ibnu123!';
-window.isHost = false;
-let hasChecked = false;
-
-/* ================================================================
-   BANK SOAL MASTER (jawaban + pertanyaan lengkap)
-   Setiap item punya: answer, clueAcross / clueDown, dir, coords
-================================================================ */
-const MASTER_WORDS = [
-  // --- Dari file asli ---
-  { answer: 'MRSA',         dir: 'down',   row: 0,  col: 6,  clue: 'Bakteri resisten di RS.' },
-  { answer: 'LIMA',         dir: 'down',   row: 0,  col: 15, clue: 'Mengurangi risiko infeksi di sarmut urutan keberapa.' },
-  { answer: 'PPI',          dir: 'across', row: 1,  col: 13, clue: 'Salah satu upaya kegiatan mencegah dan meminimal insiden rate.' },
-  { answer: 'ENDOTOKSIN',   dir: 'down',   row: 2,  col: 9,  clue: 'Jenis pemeriksaan air RO.' },
-  { answer: 'MASKER',       dir: 'down',   row: 2,  col: 12, clue: 'Menutupi hidung, mulut, dan dagu.' },
-  { answer: 'SARUNGTANGAN', dir: 'across', row: 3,  col: 5,  clue: 'APD yang tidak menggantikan cuci tangan.' },
-  { answer: 'TANGAN',       dir: 'down',   row: 4,  col: 2,  clue: 'Media transmisi penularan infeksi.' },
-  { answer: 'COKELAT',      dir: 'down',   row: 4,  col: 4,  clue: 'Warna tempat sampah B3.' },
-  { answer: 'KOHORT',       dir: 'across', row: 6,  col: 4,  clue: 'Sistem perawatan dengan diagnosa yang sama.' },
-  { answer: 'BEDAH',        dir: 'across', row: 6,  col: 11, clue: 'Jenis masker yang digunakan untuk transmisi droplet.' },
-  { answer: 'APD',          dir: 'down',   row: 6,  col: 14, clue: 'Alat pelindung diri tenaga kesehatan.' },
-  { answer: 'MEASLES',      dir: 'across', row: 8,  col: 0,  clue: 'Penyakit dirawat di ruangan tekanan negatif.' },
-  { answer: 'SURVEILANS',   dir: 'down',   row: 8,  col: 6,  clue: 'Pengawasan infeksi RS.' },
-  { answer: 'HANDWASH',     dir: 'down',   row: 8,  col: 16, clue: 'Tangan tampak kotor, waktu 40–60 detik.' },
-  { answer: 'REUSE',        dir: 'down',   row: 8,  col: 18, clue: 'Penggunaan peralatan disposable yang digunakan kembali.' },
-  { answer: 'AIRBORNE',     dir: 'down',   row: 9,  col: 13, clue: 'Transmisi yang menggunakan APD N95.' },
-  { answer: 'STERILISASI',  dir: 'across', row: 10, col: 3,  clue: 'Pemrosesan alat kesehatan kritikal.' },
-  { answer: 'UNGU',         dir: 'across', row: 10, col: 15, clue: 'Warna plastik tempat sampah kemoterapi.' },
-  { answer: 'MEI',          dir: 'down',   row: 12, col: 3,  clue: 'World Hand Hygiene Day.' },
-  { answer: 'KUKU',         dir: 'down',   row: 12, col: 11, clue: 'Bagian tangan yang terakhir dibersihkan sesuai langkah HH.' },
-  { answer: 'INFEKSI',      dir: 'across', row: 13, col: 0,  clue: 'Penyakit yang dapat dicegah dengan mencuci tangan.' },
-  { answer: 'PNEUMONIA',    dir: 'across', row: 13, col: 8,  clue: 'Penyakit droplet transmisi.' },
-  { answer: 'HAIS',         dir: 'across', row: 15, col: 5,  clue: 'Istilah terbaru infeksi yang diperoleh setelah mendapatkan perawatan di fasilitas kesehatan.' },
-  { answer: 'HAIS',         dir: 'across', row: 15, col: 16, clue: 'Infeksi terkait pelayanan kesehatan.' },
-  { answer: 'HEPA',         dir: 'across', row: 16, col: 12, clue: 'Sistem tata udara di isolasi.' },
-  { answer: 'TRANSMISI',    dir: 'across', row: 17, col: 2,  clue: 'Cara penyebaran kuman.' },
-];
-
-const ROWS = 18;
-const COLS = 20;
-
-/* ================================================================
-   SEED PER PESERTA — seed unik tiap kali halaman dibuka
-   Digunakan untuk mengacak nomor urut tampilan pertanyaan
-================================================================ */
-const SESSION_SEED = Math.floor(Math.random() * 999999) + 1;
-document.getElementById('seedBadge').textContent = 'Kode Unik: ' + SESSION_SEED;
-
-/* ── Simple seeded shuffle (Fisher-Yates) ── */
-function seededRandom(seed) {
-  let s = seed;
-  return () => {
-    s = (s * 1664525 + 1013904223) & 0xffffffff;
-    return (s >>> 0) / 0xffffffff;
-  };
-}
-
-function shuffleWithSeed(arr, seed) {
-  const rng  = seededRandom(seed);
-  const copy = [...arr];
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
-}
-
-/* ================================================================
-   BANGUN wordsConfig DARI MASTER — acak nomor urut per peserta
-================================================================ */
-// Pisahkan across & down lalu acak urutan penomoran masing-masing
-const masterAcross = MASTER_WORDS.filter(w => w.dir === 'across');
-const masterDown   = MASTER_WORDS.filter(w => w.dir === 'down');
-
-const shuffledAcross = shuffleWithSeed(masterAcross, SESSION_SEED);
-const shuffledDown   = shuffleWithSeed(masterDown,   SESSION_SEED + 7);
-
-// Gabungkan & beri nomor unik 1..N
-const allShuffled = [...shuffledAcross, ...shuffledDown];
-const wordsConfig = allShuffled.map((w, idx) => ({
-  id:     idx + 1,
-  num:    idx + 1,
-  dir:    w.dir,
-  row:    w.row,
-  col:    w.col,
-  answer: w.answer,
-  clue:   w.clue,
-}));
-
-/* ── Build cluesData dari wordsConfig ── */
-const cluesData = { across: {}, down: {} };
-wordsConfig.forEach(w => { cluesData[w.dir][w.num] = w.clue; });
-
-/* ── Build wordLookup ── */
-const wordLookup = {};
-wordsConfig.forEach(w => { wordLookup[w.id] = { num: w.num, dir: w.dir }; });
-
-/* ── Isi daftar pertanyaan (panel & mobile) ── */
-function buildClueList() {
-  const acrossItems = wordsConfig.filter(w => w.dir === 'across').sort((a,b) => a.num - b.num);
-  const downItems   = wordsConfig.filter(w => w.dir === 'down').sort((a,b) => a.num - b.num);
-
-  function renderList(items, containerId) {
-    const el = document.getElementById(containerId);
-    if (!el) return;
-    const title = items[0]?.dir === 'across' ? '↔ Mendatar' : '↕ Menurun';
-    let html = `<h4>${title}</h4>`;
-    items.forEach(w => {
-      html += `<div class="item"><span>${w.num}.</span>${w.clue}</div>`;
-    });
-    el.innerHTML = html;
-  }
-
-  renderList(acrossItems, 'clueListAcross');
-  renderList(downItems,   'clueListDown');
-
-  // Desktop panel
-  const dA = document.getElementById('desktopClueAcross');
-  const dD = document.getElementById('desktopClueDown');
-  if (dA) {
-    let h = '<strong style="color:var(--navy);font-size:11px;">↔ MENDATAR</strong><br>';
-    acrossItems.forEach(w => { h += `<span style="font-weight:800;color:var(--orange)">${w.num}.</span> ${w.clue}<br>`; });
-    dA.innerHTML = h;
-  }
-  if (dD) {
-    let h = '<strong style="color:var(--navy);font-size:11px;">↕ MENURUN</strong><br>';
-    downItems.forEach(w => { h += `<span style="font-weight:800;color:var(--orange)">${w.num}.</span> ${w.clue}<br>`; });
-    dD.innerHTML = h;
-  }
-
-  // Answer key
-  const akBody = document.getElementById('answerKeyBody');
-  if (akBody) {
-    const aList = acrossItems.map(w => `${w.num} ${w.answer}`).join(', ');
-    const dList = downItems.map(w => `${w.num} ${w.answer}`).join(', ');
-    akBody.innerHTML = `<p><strong>Mendatar:</strong> ${aList}.</p><p><strong>Menurun:</strong> ${dList}.</p>`;
-  }
-}
-
-window.toggleClueList = function () {
-  const p = document.getElementById('clueListPanel');
-  p.classList.toggle('open');
-  const btn = document.querySelector('.clue-list-toggle');
-  btn.textContent = p.classList.contains('open') ? '📖 Sembunyikan Pertanyaan ▲' : '📖 Lihat Semua Pertanyaan ▼';
-};
-
-/* ================================================================
-   RESPONSIF: Hitung ukuran sel
-================================================================ */
-function calcCellSize() {
-  const w = Math.min(window.innerWidth, 600);
-  if (w < 360)      return 24;
-  else if (w < 480) return 28;
-  else if (w < 600) return 31;
-  return 34;
-}
-
-/* ================================================================
-   TIMER
-================================================================ */
-let timerFinished  = false;
-let timerInterval  = null;
-let startTime      = Date.now();
-let elapsedSeconds = 0;
-
-function formatTime(s) {
-  const m = Math.floor(s / 60);
-  return `${m}:${String(s % 60).padStart(2, '0')}`;
-}
-
-timerInterval = setInterval(() => {
-  if (timerFinished) return;
-  const el = document.getElementById('timerDisplay');
-  if (el) el.textContent = `⏱ Waktu: ${formatTime(Math.floor((Date.now() - startTime) / 1000))}`;
-}, 1000);
-
-function stopTimer() {
-  if (timerFinished) return;
-  timerFinished  = true;
-  clearInterval(timerInterval);
-  elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
-  const el = document.getElementById('timerDisplay');
-  if (el) el.textContent = `⏱ Waktu selesai: ${formatTime(elapsedSeconds)}`;
-}
-
-function resetTimer() {
-  clearInterval(timerInterval);
-  timerFinished  = false;
-  startTime      = Date.now();
-  elapsedSeconds = 0;
-  const el = document.getElementById('timerDisplay');
-  if (el) el.textContent = '⏱ Waktu: 0:00';
-  timerInterval = setInterval(() => {
-    if (timerFinished) return;
-    const el = document.getElementById('timerDisplay');
-    if (el) el.textContent = `⏱ Waktu: ${formatTime(Math.floor((Date.now() - startTime) / 1000))}`;
-  }, 1000);
-}
-
-/* ================================================================
-   CLUE DISPLAY
-================================================================ */
-function showClue(acrossWordId, downWordId) {
-  const elEmpty   = document.getElementById('clueEmpty');
-  const elAcross  = document.getElementById('clueAcross');
-  const elDown    = document.getElementById('clueDown');
-  const elDivider = document.getElementById('clueDivider');
-
-  const hasA = acrossWordId && wordLookup[acrossWordId];
-  const hasD = downWordId   && wordLookup[downWordId];
-
-  if (!hasA && !hasD) { hideClue(); return; }
-
-  elEmpty.style.display = 'none';
-
-  if (hasA) {
-    const w = wordLookup[acrossWordId];
-    document.getElementById('clueAcrossNum').textContent  = w.num + '.';
-    document.getElementById('clueAcrossText').textContent = cluesData.across[w.num] || '—';
-    elAcross.style.display = 'block';
-    elAcross.style.animation = 'none'; elAcross.offsetHeight; elAcross.style.animation = '';
-  } else { elAcross.style.display = 'none'; }
-
-  elDivider.style.display = (hasA && hasD) ? 'block' : 'none';
-
-  if (hasD) {
-    const w = wordLookup[downWordId];
-    document.getElementById('clueDownNum').textContent  = w.num + '.';
-    document.getElementById('clueDownText').textContent = cluesData.down[w.num] || '—';
-    elDown.style.display = 'block';
-    elDown.style.animation = 'none'; elDown.offsetHeight; elDown.style.animation = '';
-  } else { elDown.style.display = 'none'; }
-}
-
-function hideClue() {
-  document.getElementById('clueEmpty').style.display   = 'flex';
-  document.getElementById('clueAcross').style.display  = 'none';
-  document.getElementById('clueDown').style.display    = 'none';
-  document.getElementById('clueDivider').style.display = 'none';
-}
-
-/* ================================================================
-   LOCK GRID
-================================================================ */
-function lockGrid() {
-  document.querySelectorAll('.cell input').forEach(inp => { inp.disabled = true; });
-  const btn = document.getElementById('btnCek');
-  if (btn) { btn.disabled = true; btn.title = 'Jawaban sudah dikunci.'; }
-  document.getElementById('lockedBanner').style.display = 'block';
-}
-
-/* ================================================================
-   BUILD GRID
-================================================================ */
-let gridData = [];
-let currentDirection    = 'across';
-let activeWordId        = null;
-let isProgrammaticFocus = false;
-
-window.createGrid = function () {
-  const cellSize = calcCellSize();
-  const container = document.getElementById('crossword');
-  container.style.gridTemplateColumns = `repeat(${COLS}, ${cellSize}px)`;
-  container.style.gridTemplateRows    = `repeat(${ROWS}, ${cellSize}px)`;
-
-  // init gridData
-  gridData = [];
-  for (let r = 0; r < ROWS; r++) {
-    const row = [];
-    for (let c = 0; c < COLS; c++) row.push({ empty: true });
-    gridData.push(row);
-  }
-
-  wordsConfig.forEach(w => {
-    let r = w.row, c = w.col;
-    if (gridData[r][c].empty) {
-      gridData[r][c] = { empty: false, num: w.num, words: {} };
-    } else {
-      gridData[r][c].num = gridData[r][c].num || w.num;
-    }
-    for (let i = 0; i < w.answer.length; i++) {
-      const cr = w.dir === 'across' ? r     : r + i;
-      const cc = w.dir === 'across' ? c + i : c;
-      if (gridData[cr][cc].empty) gridData[cr][cc] = { empty: false, words: {} };
-      if (!gridData[cr][cc].words) gridData[cr][cc].words = {};
-      gridData[cr][cc].words[w.dir] = w.id;
-    }
-  });
-
-  container.innerHTML = '';
-
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      const cell = gridData[r][c];
-      const div  = document.createElement('div');
-      div.style.width  = cellSize + 'px';
-      div.style.height = cellSize + 'px';
-
-      if (cell.empty) {
-        div.className = 'black';
-      } else {
-        div.className = 'cell';
-        div.dataset.r = r;
-        div.dataset.c = c;
-
-        if (cell.num) {
-          const span = document.createElement('span');
-          span.className   = 'num';
-          span.textContent = cell.num;
-          span.style.fontSize = Math.max(7, cellSize * 0.22) + 'px';
-          div.appendChild(span);
-        }
-
-        const input = document.createElement('input');
-        input.maxLength      = 1;
-        input.dataset.r      = r;
-        input.dataset.c      = c;
-        input.dataset.across = cell.words?.['across'] || '';
-        input.dataset.down   = cell.words?.['down']   || '';
-        input.style.fontSize = Math.max(11, cellSize * 0.38) + 'px';
-
-        input.addEventListener('focus',      () => handleFocus(input));
-        input.addEventListener('input',      (e) => handleInput(e, input));
-        input.addEventListener('keydown',    (e) => handleKeyDown(e, input));
-        // Mobile: touchstart → focus
-        input.addEventListener('touchstart', (e) => { e.preventDefault(); input.focus(); }, { passive: false });
-
-        div.appendChild(input);
-      }
-      container.appendChild(div);
-    }
-  }
-
-  buildClueList();
-};
-
-/* ── Cursor navigation ── */
-function handleFocus(input) {
-  const acrossId = input.dataset.across;
-  const downId   = input.dataset.down;
-
-  if (isProgrammaticFocus) {
-    isProgrammaticFocus = false;
-    const validId = currentDirection === 'across' ? acrossId : downId;
-    if (validId) { activeWordId = validId; }
-    else {
-      currentDirection = currentDirection === 'across' ? 'down' : 'across';
-      activeWordId     = currentDirection === 'across' ? acrossId : downId;
-    }
-    highlightActiveWord();
-    showClue(acrossId || null, downId || null);
-    return;
-  }
-
-  if (acrossId && downId) {
-    if      (activeWordId == acrossId) currentDirection = 'down';
-    else if (activeWordId == downId)   currentDirection = 'across';
-    else currentDirection = currentDirection === 'across' ? 'across' : 'down';
-  } else {
-    currentDirection = acrossId ? 'across' : 'down';
-  }
-
-  activeWordId = currentDirection === 'across' ? acrossId : downId;
-  highlightActiveWord();
-  showClue(acrossId || null, downId || null);
-}
-
-function handleInput(e, input) {
-  input.value = input.value.toUpperCase();
-  if (input.value) moveNext(input, 1);
-}
-
-function handleKeyDown(e, input) {
-  if (e.key === 'Backspace' && !input.value) {
-    moveNext(input, -1);
-  } else if (e.key === 'Tab') {
-    e.preventDefault();
-    const a = input.dataset.across, d = input.dataset.down;
-    if (a && d) {
-      currentDirection = currentDirection === 'across' ? 'down' : 'across';
-      activeWordId     = currentDirection === 'across' ? a : d;
-      highlightActiveWord();
-    }
-  } else if (e.key === 'ArrowRight') moveFocus(input,  0,  1, 'across');
-    else if (e.key === 'ArrowLeft')  moveFocus(input,  0, -1, 'across');
-    else if (e.key === 'ArrowDown')  moveFocus(input,  1,  0, 'down');
-    else if (e.key === 'ArrowUp')    moveFocus(input, -1,  0, 'down');
-}
-
-function moveNext(input, step) {
-  let r = +input.dataset.r, c = +input.dataset.c;
-  if (currentDirection === 'across') c += step; else r += step;
-  const next = document.querySelector(`input[data-r="${r}"][data-c="${c}"]`);
-  if (next && next.dataset[currentDirection] == activeWordId) {
-    isProgrammaticFocus = true; next.focus();
-  }
-}
-
-function moveFocus(input, ro, co, newDir) {
-  const r = +input.dataset.r + ro, c = +input.dataset.c + co;
-  const next = document.querySelector(`input[data-r="${r}"][data-c="${c}"]`);
-  if (next) { if (newDir) currentDirection = newDir; isProgrammaticFocus = true; next.focus(); }
-}
-
-function highlightActiveWord() {
-  document.querySelectorAll('.cell').forEach(c => c.classList.remove('active-word'));
-  if (!activeWordId) return;
-  document.querySelectorAll(`input[data-${currentDirection}="${activeWordId}"]`)
-    .forEach(inp => inp.parentElement.classList.add('active-word'));
-}
-
-document.addEventListener('mousedown', (e) => {
-  const grid  = document.getElementById('crossword');
-  const panel = document.querySelector('.clue-panel');
-  if (!grid.contains(e.target) && (!panel || !panel.contains(e.target))) {
-    activeWordId = null;
-    document.querySelectorAll('.cell').forEach(c => c.classList.remove('active-word'));
-    hideClue();
-  }
-});
-
-/* ================================================================
-   CHECK ANSWERS
-================================================================ */
-window.checkAnswers = function () {
-  if (hasChecked) return;
-
-  const name = document.getElementById('participantName').value.trim();
-  const unit = document.getElementById('participantUnit').value.trim();
-
-  if (!name) {
-    alert('Mohon isi nama peserta terlebih dahulu.');
-    document.getElementById('participantName').focus();
-    return;
-  }
-
-  hasChecked = true;
-  stopTimer();
-
-  document.querySelectorAll('.cell').forEach(c => c.classList.remove('correct', 'wrong'));
-
-  let correct = 0;
-  const total = wordsConfig.length;
-
-  wordsConfig.forEach(w => {
-    let ok = true, cells = [];
-    for (let i = 0; i < w.answer.length; i++) {
-      const cr = w.dir === 'across' ? w.row     : w.row + i;
-      const cc = w.dir === 'across' ? w.col + i : w.col;
-      const inp = document.querySelector(`input[data-r="${cr}"][data-c="${cc}"]`);
-      cells.push(inp.parentElement);
-      if (!inp.value || inp.value.toUpperCase() !== w.answer[i]) ok = false;
-    }
-    if (ok) { correct++; cells.forEach(c => c.classList.add('correct')); }
-    else    { cells.forEach(c => { if (!c.classList.contains('correct')) c.classList.add('wrong'); }); }
-  });
-
-  document.querySelectorAll('.cell.correct').forEach(c => c.classList.remove('wrong'));
-  lockGrid();
-
-  const pct     = Math.round((correct / total) * 100);
-  const timeStr = formatTime(elapsedSeconds);
-  const result  = document.getElementById('result');
-  result.textContent = `Nilai ${name}: ${correct} dari ${total} Kata Benar (${pct}%) — Waktu: ${timeStr}`;
-  result.style.color = correct === total ? '#047857' : '#b45309';
-
-  const now  = new Date().toLocaleString('id-ID');
-  const sc   = document.getElementById('scoreCard');
-  sc.style.display = 'block';
-  sc.innerHTML = `
-    <strong>Hasil Nilai Peserta</strong><br>
-    Nama Peserta: ${name}<br>
-    Unit/Ruangan: ${unit || '-'}<br>
-    Waktu: ${now}<br>
-    Skor Benar: ${correct} dari ${total} Pertanyaan<br>
-    Persentase: ${pct}%<br>
-    Waktu Pengerjaan: ${timeStr}
-  `;
-
-  window.saveToLeaderboard(name, unit, correct, pct, total, elapsedSeconds);
-};
-
-/* ================================================================
-   FIREBASE SAVE
-================================================================ */
-window.saveToLeaderboard = function (name, unit, correct, pct, total, secs) {
-  const now     = new Date().toLocaleString('id-ID');
-  const payload = { name, unit, correct, total, percentage: pct, timeSeconds: secs, timestamp: now };
-  push(ref(db, 'submissions'), payload).catch(e => console.error(e));
-  const uid = (name + '_' + (unit || '')).replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
-  runTransaction(ref(db, 'leaderboard/' + uid), (cur) => {
-    if (!cur) return { name, unit, correct, percentage: pct, timeSeconds: secs, timestamp: now };
-    if (correct > cur.correct || (correct === cur.correct && secs < (cur.timeSeconds ?? Infinity)))
-      return { name, unit, correct, percentage: pct, timeSeconds: secs, timestamp: now };
-    return cur;
-  }).catch(e => console.error(e));
-};
-
-/* ================================================================
-   UTILITIES
-================================================================ */
-window.resetGrid = function () {
-  hasChecked = false;
-  document.querySelectorAll('.cell input').forEach(inp => { inp.value = ''; inp.disabled = false; });
-  document.querySelectorAll('.cell').forEach(c => c.classList.remove('correct', 'wrong', 'active-word'));
-  document.getElementById('result').textContent = '';
-  const sc = document.getElementById('scoreCard'); sc.style.display = 'none'; sc.innerHTML = '';
-  const btn = document.getElementById('btnCek'); btn.disabled = false; btn.title = '';
-  document.getElementById('lockedBanner').style.display = 'none';
-  activeWordId = null; hideClue(); resetTimer();
-};
-
-window.showAnswers = function () {
-  if (!window.isHost) return alert('Hanya host yang dapat menampilkan jawaban.');
-  wordsConfig.forEach(w => {
-    for (let i = 0; i < w.answer.length; i++) {
-      const cr  = w.dir === 'across' ? w.row     : w.row + i;
-      const cc  = w.dir === 'across' ? w.col + i : w.col;
-      const inp = document.querySelector(`input[data-r="${cr}"][data-c="${cc}"]`);
-      inp.disabled = false; inp.value = w.answer[i]; inp.disabled = true;
-      inp.parentElement.classList.remove('wrong'); inp.parentElement.classList.add('correct');
-    }
-  });
-  document.getElementById('result').textContent = 'Semua jawaban telah ditampilkan.';
-  document.getElementById('result').style.color = '#047857';
-};
-
-window.toggleKey = function () {
-  if (!window.isHost) return alert('Kunci jawaban hanya dapat dilihat oleh host.');
-  const k = document.getElementById('answerKey');
-  k.style.display = k.style.display === 'block' ? 'none' : 'block';
-};
-
-window.clearLeaderboard = function () {
-  if (confirm('Hapus semua data dari database?')) {
-    Promise.all([remove(ref(db, 'submissions')), remove(ref(db, 'leaderboard'))])
-      .then(() => alert('Data berhasil dikosongkan.'))
-      .catch(e => alert('Gagal: ' + e.message));
-  }
-};
-
-
-/* ── Init ── */
-window.createGrid();
-
-/* ── Rerender on resize for responsiveness ── */
-let resizeTimer;
-window.addEventListener('resize', () => {
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => {
-    // Only re-calc cell size; rebuild preserving values
-    const inputs = {};
-    document.querySelectorAll('.cell input').forEach(inp => {
-      inputs[`${inp.dataset.r},${inp.dataset.c}`] = inp.value;
-    });
-    window.createGrid();
-    Object.entries(inputs).forEach(([key, val]) => {
-      const inp = document.querySelector(`input[data-r="${key.split(',')[0]}"][data-c="${key.split(',')[1]}"]`);
-      if (inp) inp.value = val;
-    });
-  }, 200);
-});
-</script>
 </body>
 </html>
